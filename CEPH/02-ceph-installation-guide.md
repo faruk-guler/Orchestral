@@ -8,7 +8,7 @@ Bu dokümanı, Ceph Reef (veya Quincy) sürümünü baz alarak, modern standart 
 
 Ceph kurmadan önce masaya koyman gereken mimari şu olmalı. En az **3 Node Fiziksel (Sunucu)** kullanacağız. 
 
-> I/O sorunları yüzünden VM (sanal makine) önerilmez.
+> I/O sorunları yüzünden enterprise ortamlar için VM (sanal makine) önerilmez.
 
 ### Donanım Önerisi (Node Başına)
 
