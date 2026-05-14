@@ -6,7 +6,7 @@ Bu dokümanı, Ceph Reef (veya Quincy) sürümünü baz alarak, modern standart 
 
 ## 🏗️ 1. Mimari ve Gereksinimler (Planlama)
 
-Ceph kurmadan önce masaya koyman gereken mimari şu olmalı. En az **3 Node (Sunucu)** kullanacağız.
+Ceph kurmadan önce masaya koyman gereken mimari şu olmalı. En az **3 Node Fiziksel (Sunucu)** kullanacağız. I/O sorunları yüzünden sanal makine(vm) önerilmez.
 
 ### Donanım Önerisi (Node Başına)
 
