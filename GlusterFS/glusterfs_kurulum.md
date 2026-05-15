@@ -43,7 +43,7 @@ Debian 13 resmi depolarında GlusterFS paketleri kararlı ve güncel olarak bulu
 ```bash
 # Debian 13 için GlusterFS ve XFS araçlarının kurulumu
 sudo apt update
-sudo apt install glusterfs-server xfsprogs -y
+sudo apt install glusterfs-server xfsprogs attr acl -y
 sudo systemctl enable --now glusterd
 ```
 
@@ -82,7 +82,7 @@ sudo mkfs.xfs -i size=512 /dev/sdb
 sudo mkdir -p /data/glusterfs/mybrick
 
 # Diski mount etme (ayarları anında uygulamak için parametrelerle)
-sudo mount -o inode64,noatime,nodiratime /dev/sdb /data/glusterfs/mybrick
+sudo mount -o noatime,nodiratime /dev/sdb /data/glusterfs/mybrick
 
 # fstab'a ekleme (kalıcı olması için)
 echo '/dev/sdb /data/glusterfs/mybrick xfs inode64,noatime,nodiratime 0 0' | sudo tee -a /etc/fstab
