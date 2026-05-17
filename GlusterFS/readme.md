@@ -1,4 +1,4 @@
-# GlusterFS: Mimari ve Temel Kavramlar (Girizgah)
+# GlusterFS: Mimari ve Temel Kavramlar
 
 ## 1. GlusterFS Nedir?
 
