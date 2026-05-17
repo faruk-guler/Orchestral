@@ -2,6 +2,8 @@
 
 ## 1. GlusterFS Nedir?
 
+<img src=".\img\glusterfs.jpg" alt="alt text" width="360" height="250">
+
 GlusterFS, petabaytlarca veriyi işleyebilen, ölçeklenebilir, açık kaynak kodlu ve dağıtık bir ağ dosya sistemidir (Distributed File System). Verileri tek bir sunucuda tutmak yerine, ağ üzerindeki birden fazla sunucuya (node/peer) dağıtarak veya kopyalayarak yüksek erişilebilirlik (High Availability), hata toleransı ve yüksek performans sağlar.
 
 Genellikle bulut bilişim, medya yayıncılığı (streaming), büyük veri analizi (Big Data) ve sanallaştırma altyapılarında tercih edilir.
