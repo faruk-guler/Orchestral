@@ -1,0 +1,141 @@
+# Gereksinimler:
+
+Fixed Size "Thick Provision" (alanı baştan tam olarak rezerve et) tercih etmeniz disk parçalanmasını (fragmentation) engeller ve performansı artırır.
+LVM Kullanımı: Volume VM'lerindeki veri disklerini doğrudan formatlamak yerine LVM (Logical Volume Manager) ile yapılandırmak çok büyük avantaj sağlar.
+Anti-Affinity (Fiziksel Host Ayrımı) kuralı yaz 3 node için
+En az 3 vm
+
+seaweedfs
+
+192.168.47.21 node1 Master
+192.168.47.23 node2 Worker1
+192.168.47.25 node3 Worker2
+
+
+#  GO Install:
+apt update
+export PATH=$PATH:/usr/local/go/bin
+apt install golang -y
+go version
+
+
+# Seaweeedfs Install:
+cd /tmp
+wget https://github.com/seaweedfs/seaweedfs/releases/latest/download/linux_amd64.tar.gz
+tar -xzf linux_amd64.tar.gz
+sudo mv weed /usr/local/bin/
+weed version
+
+# Klasörü oluştur ve diski o klasöre bağla
+mkdir -p /data/master /data/volumes
+mount -a
+
+
+# services:
+systemctl daemon-reload
+systemctl enable seaweedfs-master seaweedfs-filer seaweedfs-volume
+systemctl start seaweedfs-master seaweedfs-filer seaweedfs-volume
+systemctl status seaweedfs-master seaweedfs-filer seaweedfs-volume
+
+# UI:
+Küme Yönetimi (Master UI): :9333
+Dosya Yöneticisi (Filer UI): :8888
+Volume Server UI: :8080
+journalctl -u seaweedfs-master -f
+
+# Replikasyon ayarı:
+weed shell
+volume.configure.replication -replication=001
+
+# Systemd Servislerini Oluşturma:
+
+Makine IP	Görevi	Kurulacak Servisler
+192.168.47.21	Master	master, filer, volume
+192.168.47.23	Worker 1	volume
+192.168.47.25	Worker 2	volume
+
+
+--------------------------------
+📍 Node1 Master Servisler:
+--------------------------------
+cat <<EOF | sudo tee /etc/systemd/system/seaweedfs-master.service
+[Unit]
+Description=SeaweedFS Master
+After=network.target
+
+[Service]
+Type=simple
+User=root
+LimitNOFILE=1000000
+ExecStart=/usr/local/bin/weed master -ip=192.168.47.21 -port=9333 -mdir=/data/master -defaultReplication=001
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+cat <<EOF | sudo tee /etc/systemd/system/seaweedfs-filer.service
+[Unit]
+Description=SeaweedFS Filer
+After=seaweedfs-master.service
+
+[Service]
+Type=simple
+User=root
+LimitNOFILE=1000000
+# DİKKAT: Verilerin yazılacağı dizin Linux standartlarına uygun olarak buraya eklendi
+WorkingDirectory=/data/filer
+ExecStart=/usr/local/bin/weed filer \
+  -master=192.168.47.21:9333 \
+  -ip=192.168.47.21 \
+  -port=8888 \
+  -s3 \
+  -s3.port=8333
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+cat <<EOF | sudo tee /etc/systemd/system/seaweedfs-volume.service
+[Unit]
+Description=SeaweedFS Volume Node 1
+After=network.target
+
+[Service]
+Type=simple
+User=root
+LimitNOFILE=1000000
+ExecStart=/usr/local/bin/weed volume -mserver=192.168.47.21:9333 -ip=192.168.47.21 -port=8080 -dir=/data/volumes -max=100
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+--------------------------------------------------------
+📍 Worker Nodes Servisler: ip adreslerini değiştir.
+--------------------------------------------------------
+
+cat <<EOF | sudo tee /etc/systemd/system/seaweedfs-volume.service
+[Unit]
+Description=SeaweedFS Volume Node 2
+After=network.target
+
+[Service]
+Type=simple
+User=root
+LimitNOFILE=1000000
+ExecStart=/usr/local/bin/weed volume -mserver=192.168.47.21:9333 -ip=192.168.47.23 -port=8080 -dir=/data/volumes -max=100
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
