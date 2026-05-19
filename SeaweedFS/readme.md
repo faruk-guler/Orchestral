@@ -36,7 +36,7 @@ Raft protokolü gereği, master sunucular aralarında oylama yaparak bir "Lider"
 
 ## 📌 Gereksinimler
 
-- En az **3 adet** sanal makine.
+- En az **3 adet** Linux sanal makine.
 - Veri diskleri **LVM** ile yapılandırılmış ve **Thick Provision** (tam boyut ayrılmış) olmalıdır.
 - Node'ların farklı fiziksel sunucularda çalışmasını garanti eden **Anti-Affinity** kuralı tanımlanmalıdır.
 - **Disk Kapasite Planlaması:** Volume sunucularında tanımlanan `-max` parametresi (şablonda 100), her bir hacmin maksimum boyutu 32GB olacağından, kullanılabilir disk alanına göre ayarlanmalıdır. Örneğin, 1 TB disk alanı için `-max=30` (`30 * 32GB = 960GB`) olarak yapılandırılmalıdır.
