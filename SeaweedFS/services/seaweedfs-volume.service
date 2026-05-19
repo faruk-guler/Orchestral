@@ -1,6 +1,7 @@
 [Unit]
 Description=SeaweedFS Volume
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -8,7 +9,7 @@ User=seaweedfs
 Group=seaweedfs
 LimitNOFILE=1000000
 ExecStart=/usr/local/bin/weed volume \
-  -mserver=192.168.47.21:9333,192.168.47.23:9333,192.168.47.25:9333 \
+  -master=192.168.47.21:9333,192.168.47.23:9333,192.168.47.25:9333 \
   -ip=<SUNUCU_IP_ADRESI> \
   -port=8080 \
   -dir=/data/volumes \
@@ -19,3 +20,4 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+

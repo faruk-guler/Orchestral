@@ -1,0 +1,30 @@
+[jwt.signing]
+key = "BENIM_COK_GIZLI_SIFREM_12345"
+
+# [jwt.signing.read]
+# key = "BENIM_COK_GIZLI_OKUMA_SIFREM_12345" # Okuma işlemlerini de JWT ile korumak isterseniz aktif edin
+
+[jwt.filer_signing]
+key = "BENIM_COK_GIZLI_FILER_SIFREM_12345"
+
+# =========================================================
+# mTLS (Sunucular Arası gRPC Şifreleme)
+# =========================================================
+[grpc]
+ca = "/etc/seaweedfs/tls/ca.crt"
+
+[grpc.volume]
+cert = "/etc/seaweedfs/tls/volume.crt"
+key  = "/etc/seaweedfs/tls/volume.key"
+
+[grpc.master]
+cert = "/etc/seaweedfs/tls/master.crt"
+key  = "/etc/seaweedfs/tls/master.key"
+
+[grpc.filer]
+cert = "/etc/seaweedfs/tls/filer.crt"
+key  = "/etc/seaweedfs/tls/filer.key"
+
+[grpc.client]
+cert = "/etc/seaweedfs/tls/client.crt"
+key  = "/etc/seaweedfs/tls/client.key"

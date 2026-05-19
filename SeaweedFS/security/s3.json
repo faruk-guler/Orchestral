@@ -1,0 +1,34 @@
+{
+  "identities": [
+    {
+      "name": "ag_bilgi_sistemi_backend",
+      "credentials": [
+        {
+          "accessKey": "APP_ACCESS_KEY",
+          "secretKey": "SuperGizliBackendSifresi2026!"
+        }
+      ],
+      "actions": [
+        "Read",
+        "Write",
+        "List",
+        "Tagging",
+        "Admin"
+      ]
+    },
+    {
+      "name": "yazilimci_test_hesabi",
+      "credentials": [
+        {
+          "accessKey": "TEST_ACCESS_KEY",
+          "secretKey": "TestSifresi_123"
+        }
+      ],
+      "actions": [
+        "Read",
+        "Write",
+        "List"
+      ]
+    }
+  ]
+}

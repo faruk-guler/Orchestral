@@ -1,6 +1,7 @@
 [Unit]
 Description=SeaweedFS Master
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -19,3 +20,4 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+
