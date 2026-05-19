@@ -1,0 +1,5 @@
+[jwt.signing.read]
+key = ""
+
+[jwt.signing.write]
+key = "BENIM_COK_GIZLI_SIFREM_12345"
