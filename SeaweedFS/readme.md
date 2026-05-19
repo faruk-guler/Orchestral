@@ -1,6 +1,6 @@
 # SeaweedFS
 
-![SeaweedFS Logo](https://raw.githubusercontent.com/seaweedfs/seaweedfs/master/note/seaweedfs.png)
+<img src="https://raw.githubusercontent.com/seaweedfs/seaweedfs/master/note/seaweedfs.png" width="300" height="300">
 
 > **3 Node'lu Kurumsal Best Practice (High Availability) SeaweedFS Kümesi Kurulum Rehberi.**
 
