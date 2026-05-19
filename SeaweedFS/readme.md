@@ -1,10 +1,10 @@
-# SeaweedFS (High Availability) Kurulum Rehberi
+# SeaweedFS
 
 <img src="https://raw.githubusercontent.com/seaweedfs/seaweedfs/master/note/seaweedfs.png" width="300" height="300">
 
 ---
 
-## 🧬 SeaweedFS Mimari ve Best Practice Yaklaşımı
+##  (High Availability) Kurulum Rehberi
 
 Bu kurulum **Hiper-Bütünleşik (Hyper-Converged)** mimariyi temel alır. 3 sunuculu kümelerde Yüksek Erişilebilirlik (HA) sağlamak için **Master servisi 3 sunucuda birden çalıştırılır.**
 
