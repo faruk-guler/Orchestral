@@ -1,8 +1,6 @@
-# SeaweedFS
+# SeaweedFS (High Availability) Kurulum Rehberi
 
 <img src="https://raw.githubusercontent.com/seaweedfs/seaweedfs/master/note/seaweedfs.png" width="300" height="300">
-
-> **3 Node'lu Kurumsal Best Practice (High Availability) SeaweedFS Kümesi Kurulum Rehberi.**
 
 ---
 
