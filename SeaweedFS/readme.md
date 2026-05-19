@@ -21,7 +21,7 @@ Raft protokolü gereği, master sunucular aralarında oylama yaparak bir "Lider"
 
 ## 📌 Gereksinimler
 
-- En az **3 adet** sanal makine.
+- En az **3 adet** Linux sanal makine (Debian Based)
 - Veri diskleri **LVM** ile yapılandırılmış ve **Thick Provision** (tam boyut ayrılmış) olmalıdır.
 - Node'ların farklı fiziksel sunucularda çalışmasını garanti eden **Anti-Affinity** kuralı tanımlanmalıdır.
 
