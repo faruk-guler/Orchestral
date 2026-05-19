@@ -33,7 +33,7 @@ Raft protokolü gereği, master sunucular aralarında oylama yaparak bir "Lider"
 
 SeaweedFS önceden derlenmiş (pre-compiled) tek bir binary dosyadan oluşur. Sunucuya Go kurmanıza gerek yoktur.
 
-> **Not:** Aşağıdaki adımlar **3 NODE'DA DA** çalıştırılmalıdır.
+> **Not:** Aşağıdaki adımlar her **3 NODE** üzerinde yapılmalıdır.
 
 ```bash
 cd /tmp
