@@ -4,7 +4,7 @@
 
 ---
 
-##  (High Availability) Kurulum Rehberi
+## SeaweedFS (High Availability) Kurulum Rehberi
 
 Bu kurulum **Hiper-Bütünleşik (Hyper-Converged)** mimariyi temel alır. 3 sunuculu kümelerde Yüksek Erişilebilirlik (HA) sağlamak için **Master servisi 3 sunucuda birden çalıştırılır.**
 
