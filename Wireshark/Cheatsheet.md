@@ -1,5 +1,6 @@
 # Useful Wireshark Filters Cheatsheet
-```
+
+```text
 ✓ `ip.addr == 10.0.0.1` 10.0.0.1 adresini kaynak veya hedef olarak içeren tüm trafiği göster
 ✓ `ip.addr == 10.0.0.0/24` 10.0.0.0/24 ağındaki herhangi bir adrese gelen veya giden tüm trafiği göster
 ✓ `ip.src == 10.0.0.1 && ip.dst == 10.0.0.2` 10.0.0.1'den 10.0.0.2'ye giden tüm trafiği göster
