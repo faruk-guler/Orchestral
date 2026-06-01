@@ -1,5 +1,5 @@
 # Useful Wireshark Filters Cheatsheet
-
+```
 ✓ `ip.addr == 10.0.0.1` Show all traffic with 10.0.0.1 as either source or destination
 ✓ `ip.addr == 10.0.0.0/24` Show all traffic to and from any address in 10.0.0.0/24
 ✓ `ip.src == 10.0.0.1 && ip.dst == 10.0.0.2` Show all traffic from 10.0.0.1 to 10.0.0.2
@@ -32,3 +32,4 @@
 ✓ `eth[0x47:2] == 01:80` Match Ethernet frames with 2 bytes at offset 0x47 == 01:80
 ✓ `!(arp or icmp or stp)` Filter out background traffic from ARP, ICMP and STP
 ✓ `vlan.id == 100` Show packets tagged with VLAN ID 100
+```
