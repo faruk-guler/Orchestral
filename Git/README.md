@@ -1,6 +1,6 @@
 # Git Ultimate Master Rehberi
 
-![Git Logo](img/git-logo.png)
+<img src="img/git-logo.png" width="300" height="300">
 
 Git, sadece bir versiyon kontrol sistemi değil; modern yazılım geliştirme süreçlerinin kalbi, hız ve güvenliğin simgesidir. Bu rehberde, Git'in yüzeysel komutlarından ziyade kaputun altındaki mimariyi ve mühendislik felsefesini inceleyeceğiz.
 
