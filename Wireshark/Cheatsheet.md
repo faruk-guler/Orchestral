@@ -1,35 +1,35 @@
 # Useful Wireshark Filters Cheatsheet
 ```
-✓ `ip.addr == 10.0.0.1` Show all traffic with 10.0.0.1 as either source or destination
-✓ `ip.addr == 10.0.0.0/24` Show all traffic to and from any address in 10.0.0.0/24
-✓ `ip.src == 10.0.0.1 && ip.dst == 10.0.0.2` Show all traffic from 10.0.0.1 to 10.0.0.2
-✓ `!(ip.addr == 10.0.0.1)` Exclude all traffic to or from 10.0.0.1
-✓ `ip.ttl < 10` Show packets with TTL below 10 (useful for detecting routing loops)
-✓ `icmp.type == 3` Show ICMP "destination unreachable" packets
-✓ `tcp or udp` Show TCP or UDP traffic
-✓ `tcp.port == 80` Show TCP traffic with port 80
-✓ `tcp.srcport < 1000` Show TCP traffic with source port range
-✓ `!(tcp or udp)` Find non-TCP/UDP traffic (unusual protocols)
-✓ `http or dns` Show all HTTP or DNS traffic
-✓ `tcp.flags.syn == 1` Show TCP packets with SYN flag set
-✓ `tcp.flags == 0x012` Show TCP packets with both SYN and ACK flags set
-✓ `tcp.analysis.retransmission` Show all retransmitted TCP packets
-✓ `tcp.analysis.lost_segment` Show TCP segments flagged as lost
-✓ `tcp.analysis.duplicate_ack` Show TCP duplicate ACKs signaling packet loss
-✓ `http.request.method == "GET"` Show HTTP packets associated with HTTP GET
-✓ `http.response.code == 404` Show packets associated with HTTP 404 response
-✓ `http.host == "www.test.com"` Show HTTP traffic matching the Host header field
-✓ `tls.handshake` Show only TLS handshake packets
-✓ `tls.handshake.type == 1` Show client Hello packet during TLS handshake
-✓ `dhcp and ip.addr == 10.0.0.0/24` Show DHCP traffic for 10.0.0.0/24 subnet
-✓ `dhcp.hw.mac_addr == 00:11:22:33:44:55` Show DHCP packets for client MAC addr
-✓ `dns.qry.name contains "cnn.com"` Show DNS query packets containing "cnn.com"
-✓ `dns.resp.name contains "cnn.com"` Show DNS response packets containing "cnn.com"
-✓ `dns.qry.name matches "\.xyz$|\.club$"` Show DNS query packets ending specified TLDs
-✓ `frame contains "keyword"` Show all packets that contain the word "keyword"
-✓ `frame.len > 1000` Show all packets with total length larger than 1000 bytes
-✓ `eth.addr == 00:11:22:33:44:55` Show all traffic to or from the specified MAC address
-✓ `eth[0x47:2] == 01:80` Match Ethernet frames with 2 bytes at offset 0x47 == 01:80
-✓ `!(arp or icmp or stp)` Filter out background traffic from ARP, ICMP and STP
-✓ `vlan.id == 100` Show packets tagged with VLAN ID 100
+✓ `ip.addr == 10.0.0.1` 10.0.0.1 adresini kaynak veya hedef olarak içeren tüm trafiği göster
+✓ `ip.addr == 10.0.0.0/24` 10.0.0.0/24 ağındaki herhangi bir adrese gelen veya giden tüm trafiği göster
+✓ `ip.src == 10.0.0.1 && ip.dst == 10.0.0.2` 10.0.0.1'den 10.0.0.2'ye giden tüm trafiği göster
+✓ `!(ip.addr == 10.0.0.1)` 10.0.0.1'e veya 10.0.0.1'den gelen tüm trafiği hariç tut
+✓ `ip.ttl < 10` TTL değeri 10'dan küçük paketleri göster (yönlendirme döngülerini tespit etmek için kullanışlı)
+✓ `icmp.type == 3` ICMP "hedefe ulaşılamıyor" paketlerini göster
+✓ `tcp or udp` TCP veya UDP trafiğini göster
+✓ `tcp.port == 80` Port 80 üzerindeki TCP trafiğini göster
+✓ `tcp.srcport < 1000` Kaynak portu 1000'den küçük TCP trafiğini göster
+✓ `!(tcp or udp)` TCP/UDP dışı trafiği bul (alışılmadık protokoller)
+✓ `http or dns` Tüm HTTP veya DNS trafiğini göster
+✓ `tcp.flags.syn == 1` SYN bayrağı set edilmiş TCP paketlerini göster
+✓ `tcp.flags == 0x012` Hem SYN hem de ACK bayrağı set edilmiş TCP paketlerini göster
+✓ `tcp.analysis.retransmission` Yeniden iletilen tüm TCP paketlerini göster
+✓ `tcp.analysis.lost_segment` Kayıp olarak işaretlenen TCP segmentlerini göster
+✓ `tcp.analysis.duplicate_ack` Paket kaybına işaret eden tekrarlı TCP ACK'lerini göster
+✓ `http.request.method == "GET"` HTTP GET isteğiyle ilişkili paketleri göster
+✓ `http.response.code == 404` HTTP 404 yanıtıyla ilişkili paketleri göster
+✓ `http.host == "www.test.com"` Host başlık alanıyla eşleşen HTTP trafiğini göster
+✓ `tls.handshake` Yalnızca TLS el sıkışma paketlerini göster
+✓ `tls.handshake.type == 1` TLS el sıkışması sırasındaki Client Hello paketini göster
+✓ `dhcp and ip.addr == 10.0.0.0/24` 10.0.0.0/24 alt ağı için DHCP trafiğini göster
+✓ `dhcp.hw.mac_addr == 00:11:22:33:44:55` Belirtilen istemci MAC adresi için DHCP paketlerini göster
+✓ `dns.qry.name contains "cnn.com"` "cnn.com" içeren DNS sorgu paketlerini göster
+✓ `dns.resp.name contains "cnn.com"` "cnn.com" içeren DNS yanıt paketlerini göster
+✓ `dns.qry.name matches "\.xyz$|\.club$"` Belirtilen TLD'lerle biten DNS sorgu paketlerini göster
+✓ `frame contains "keyword"` "keyword" kelimesini içeren tüm paketleri göster
+✓ `frame.len > 1000` Toplam uzunluğu 1000 byte'tan büyük olan tüm paketleri göster
+✓ `eth.addr == 00:11:22:33:44:55` Belirtilen MAC adresine gelen veya giden tüm trafiği göster
+✓ `eth[0x47:2] == 01:80` 0x47 ofsetinde 2 byte == 01:80 olan Ethernet çerçevelerini eşleştir
+✓ `!(arp or icmp or stp)` ARP, ICMP ve STP arka plan trafiğini filtrele
+✓ `vlan.id == 100` VLAN ID 100 ile etiketlenmiş paketleri göster
 ```
