@@ -1,5 +1,9 @@
 # Bölüm 2: Kriptografik Derin Dalış
 
+[<< Önceki Bölüm](01_giris_ve_felsefe.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](03_protokol_ve_paketler.md)
+
+---
+
 WireGuard'ın derinlemesine teknik detaylarına inmek için onun kalbini, yani kriptografik primitiflerini ve **Noise Protocol Framework**'ü anlamalısın. WireGuard, bir eldiven gibi birbirine uyan seçkin bir algoritma seti kullanır.
 
 ## 1. Noise Protocol Framework (Noise_IK)
@@ -33,8 +37,7 @@ WireGuard'da anahtarlar sonsuza kadar kullanılmaz.
 - **Dinamik Rotasyon**: Her el sıkışmada (Handshake) yeni bir geçici (ephemeral) anahtar seti türetilir.
 - **Perfect Forward Secrecy (PFS)**: Eğer birinin statik özel anahtarı (private key) çalınırsa, o anahtar çalınmadan önceki trafiği çözmesi mümkün değildir. Çünkü her oturumun anahtarı o an üretilen "ephemeral" anahtarlara bağlıdır.
 
-## 4. Post-Quantum Preshared Key (PS)
+## 4. Post-Quantum Preshared Key (PSK)
 WireGuard, kuantum bilgisayarların ECDH'yi çözme ihtimaline karşı opsiyonel bir koruma sunar. Konfigürasyona eklenecek bir **PresharedKey**, Noise handshake'ine karıştırılır. Bu sayede kuantum saldırılarına karşı simetrik bir güvenlik katmanı eklenir.
 
----
-[Sonraki Bölüm: Protokol ve Paket Yapısı >>](03_protokol_ve_paketler.md)
+[<< Önceki Bölüm](01_giris_ve_felsefe.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](03_protokol_ve_paketler.md)

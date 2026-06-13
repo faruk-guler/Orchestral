@@ -1,5 +1,9 @@
 # Bölüm 4: CryptoKey Routing
 
+[<< Önceki Bölüm](03_protokol_ve_paketler.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](05_mimari_performans.md)
+
+---
+
 WireGuard'ın en devrimci özelliklerinden biri **CryptoKey Routing** (Kripto-Anahtar Yönlendirme) mekanizmasıdır. Bu kavram, klasik VPN'lerdeki paket filtreleme ve yönlendirme karmaşasını tek bir basit eşleşmeye indirger.
 
 ## 1. Temel Kavram: Public Key = Kimlik = IP
@@ -29,5 +33,4 @@ WireGuard Peer'ları sabit IP adreslerine sahip olmak zorunda değildir.
 - Bir Peer (İstemci), IP adresi değişse bile (örneğin Wi-Fi'dan 4G'ye geçiş), sunucuya geçerli bir paket gönderdiği an sunucu onun yeni IP/Port kombinasyonunu (Endpoint) günceller.
 - Bu özellik, mobil cihazlarda bağlantının hiç kopmamasını sağlar.
 
----
-[Sonraki Bölüm: Çekirdek Mimarisi ve Performans >>](05_mimari_performans.md)
+[<< Önceki Bölüm](03_protokol_ve_paketler.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](05_mimari_performans.md)

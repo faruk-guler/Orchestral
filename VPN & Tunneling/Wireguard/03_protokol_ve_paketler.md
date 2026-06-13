@@ -1,5 +1,9 @@
 # Bölüm 3: Protokol Akışı ve Paket Yapısı
 
+[<< Önceki Bölüm](02_kriptografi.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](04_cryptokey_routing.md)
+
+---
+
 WireGuard, UDP üzerinden çalışır ve sadece **4 ana paket türü** vardır. Bu basitlik, protokolün hızı ve güvenliğinin anahtarıdır.
 
 ## 1. Paket Türleri ve Yapıları
@@ -7,7 +11,7 @@ WireGuard, UDP üzerinden çalışır ve sadece **4 ana paket türü** vardır. 
 Tüm WireGuard paketleri küçük bir başlık (header) ile başlar. İlk byte her zaman paket tipini belirler:
 
 ### A. Handshake Initiation (Tip: 1)
-İstemcinin (Initiator) el sıkışmayı başlatmak için gönderdiği pakettir.
+İstemcinin (Initiator) el sıkışmayı başlatmak için gönderdiği, sabit **148 bayt** boyutundaki pakettir. (Detaylı bayt haritası için bkz. Bölüm 9)
 - **Sender Index**: İstemcinin yerel olarak oluşturduğu benzersiz bir ID (32-bit). Sunucu, istemciye cevap verirken bu ID'yi kullanır.
 - **Unencrypted Ephemeral**: İstemcinin o anlık oluşturduğu geçici public key.
 - **Encrypted Static**: İstemcinin asıl public key'i (Şifrelenmiş olarak gönderilir, gizlilik sağlar).
@@ -24,7 +28,7 @@ Sunucunun (Responder) cevabıdır.
 Eğer sunucu ağır bir yük (Load) altındaysa ve DoS saldırısı şüphesi varsa, el sıkışma paketini reddeder ve istemciye bir "Cookie" gönderir.
 
 ### D. Transport Data (Tip: 4)
-Asıl verinin (VPN trafiği) taşındığı pakettir.
+Asıl verinin (VPN trafiği) taşındığı değişken boyutlu pakettir.
 - **Receiver Index**: Alıcının daha önceden belirlediği ID.
 - **Counter**: 64-bitlik bir sayaç. Replay attack (tekrar saldırısı) koruması sağlar.
 - **Encrypted Payload**: Şifrelenmiş veri.
@@ -42,5 +46,4 @@ WireGuard'ın "stateless" (durumsuz) gibi görünmesinin sebebi akıllı zamanla
 - **REJECT_AFTER_TIME**: Bir anahtar çifti 3 dakikadan sonra geçersiz sayılır.
 - **KEEPALIVE**: Eğer trafik yoksa, tünelin açık kalması için (NAT arkasındaki cihazlar için kritik) her 25 saniyede bir boş paket gönderilebilir.
 
----
-[Sonraki Bölüm: CryptoKey Routing >>](04_cryptokey_routing.md)
+[<< Önceki Bölüm](02_kriptografi.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](04_cryptokey_routing.md)

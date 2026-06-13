@@ -1,6 +1,8 @@
 # Bölüm 8: İleri Seviye Konfigürasyon ve Hata Ayıklama
 
-[<< Önceki Bölüm: Kurulum](07_kurulum_linux_windows.md) | [Sonraki Bölüm: Derin Teknik Analiz >>](09_derin_teknik_analiz.md)
+[<< Önceki Bölüm](07_kurulum_linux_windows.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](09_derin_teknik_analiz.md)
+
+---
 
 Kuramsal bilgileri pratiğe dökme zamanı. WireGuard, basit bir `INI` formatında konfigürasyon dosyası kullanır (`/etc/wireguard/wg0.conf`).
 
@@ -22,6 +24,7 @@ PresharedKey = <Opsiyonel_Kuantum_Koruması>
 ```
 
 - **PostUp/PostDown**: Tünel açıldığında ve kapandığında çalışan betiklerdir. Genellikle NAT ve yönlendirme (forwarding) için kullanılır.
+  *Önemli Not: `PostUp` ve `PostDown` komutlarındaki `eth0` parametresini sunucunuzun internete bağlı olan gerçek dış ağ arayüzü adı (ör. `eth0`, `ens3`, `enp3s0` veya `wlan0`) ile değiştirmelisiniz. Aksi takdirde istemciler internete erişemez.*
 - **AllowedIPs**: Sunucu tarafında "bu istemci hangi iç IP'leri kullanabilir?" sorusuna yanıt verir.
 
 ## 2. MTU ve MSS Clamping (En Büyük Sorun)
@@ -43,13 +46,12 @@ VPN tünelleri, paketin üzerine kendi başlıklarını (header) ekler. Bu durum
 ### C. Çekirdek Logları
 Eğer çekirdek seviyesinde bir sorun varsa:
 `dmesg | tail` veya `journalctl -k` komutları WireGuard modülünün hata mesajlarını gösterir.
-
-4.  **IP Forwarding**: Linux sunucuda `sysctl -w net.ipv4.ip_forward=1` yapılmamışsa paketler tünelden dışarı (İnternete) çıkamaz.
+## 4. IP Yönlendirme (IP Forwarding)
+Linux sunucuda `sysctl -w net.ipv4.ip_forward=1` yapılmamışsa paketler tünelden dışarı (İnternete) çıkamaz.
 
 ## 5. DNS Güvenliği ve Kaçak (Leak) Önleme
 VPN'lerde en sık karşılaşılan sorun DNS sorgularının tünel dışına taşmasıdır.
 - **DNS Parametresi**: `[Interface]` altına `DNS = 1.1.1.1` eklemek, sistemin tüm DNS sorgularını tünel içine zorlamasını sağlar.
 - **IPv6 Sızıntısı**: Eğer sunucu IPv6 desteklemiyorsa, `AllowedIPs` kısmına `::/0` eklememek Windows'un native IPv6 üzerinden DNS sızdırmasına neden olabilir. Her zaman `AllowedIPs = 0.0.0.0/0, ::/0` kullanarak tüm yolları kapatın.
 
----
-[Sonraki Bölüm: Derin Teknik Analiz >>](09_derin_teknik_analiz.md)
+[<< Önceki Bölüm](07_kurulum_linux_windows.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](09_derin_teknik_analiz.md)

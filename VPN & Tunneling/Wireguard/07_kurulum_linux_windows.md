@@ -1,8 +1,10 @@
 # Bölüm 7: Linux ve Windows Kurulum Rehberi
 
-Bu bölümde, her iki platformda WireGuard'ı sıfırdan ayağa kaldırmayı ve ilk başarılı tüneli kurmayı öğreneceğiz.
+[<< Önceki Bölüm](06_guvenlik_ve_stealth.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](08_pratik_ve_debug.md)
 
-[<< Önceki Bölüm: Güvenlik](06_guvenlik_ve_stealth.md) | [Sonraki Bölüm: Pratik ve Debug >>](08_pratik_ve_debug.md)
+---
+
+Bu bölümde, her iki platformda WireGuard'ı sıfırdan ayağa kaldırmayı ve ilk başarılı tüneli kurmayı öğreneceğiz.
 
 ## 1. Linux Kurulumu (KMT: Komut Satırı)
 
@@ -28,7 +30,10 @@ wg genkey | tee privatekey | wg pubkey > publickey
 ```
 *Not: `umask 077` komutu, üretilen dosyaların sadece sahibi tarafından okunabilmesini sağlar.*
 
-### D. Servisi Başlatma
+### D. Konfigürasyon Dosyasının Oluşturulması
+Servisi başlatmadan önce `/etc/wireguard/wg0.conf` dosyasını oluşturup gerekli tanımlamaları yapmalısınız. (Konfigürasyon dosyasının ayrıntılı yapısı için bkz. [Bölüm 8: İleri Seviye Konfigürasyon](08_pratik_ve_debug.md)).
+
+### E. Servisi Başlatma
 ```bash
 sudo wg-quick up wg0
 sudo systemctl enable wg-quick@wg0
@@ -77,4 +82,20 @@ WireGuard doğuştan çift yığınlıdır (Dual-stack). Sunucu ve istemci aras�
 - **AllowedIPs**: Her iki protokolün bloklarını ekleyin (Örn: `0.0.0.0/0, ::/0`).
 
 ---
-[Sonraki Bölüm: Pratik Uygulama ve Debug >>](08_pratik_ve_debug.md)
+
+## 5. Mobil İstemciler (Android & iOS) ve QR Kod ile Kurulum
+Mobil cihazlarda konfigürasyonu elle girmek yerine bir QR kodunu taratarak saniyeler içinde bağlantıyı kurabilirsiniz.
+
+1. **Linux Sunucuda qrencode Kurulumu:**
+   ```bash
+   sudo apt install qrencode -y
+   ```
+2. **QR Kod Üretimi:**
+   İstemci konfigürasyon dosyasını (`client.conf`) terminale QR kod olarak yazdırmak için:
+   ```bash
+   qrencode -t ansiutf8 < client.conf
+   ```
+   Bu komut terminal ekranında büyük bir QR kod oluşturacaktır. Mobil cihazınızdaki resmi WireGuard uygulamasını açıp **Create from QR code** (QR Koddan Oluştur) seçeneğiyle bu kodu kameraya taratmanız yeterlidir.
+
+---
+[<< Önceki Bölüm](06_guvenlik_ve_stealth.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](08_pratik_ve_debug.md)

@@ -1,5 +1,9 @@
 # Bölüm 5: Çekirdek Mimarisi ve Performans
 
+[<< Önceki Bölüm](04_cryptokey_routing.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](06_guvenlik_ve_stealth.md)
+
+---
+
 WireGuard, performans söz konusu olduğunda rakipsizdir. Bu başarının arkasındaki sır, Linux çekirdeği (Kernel) ile olan derin entegrasyonu ve modern donanım mimarisini sonuna kadar kullanmasıdır.
 
 ## 1. Çekirdek Alanı (Kernel Space) Avantajı
@@ -7,6 +11,8 @@ OpenVPN gibi VPN'ler kullanıcı alanında (Userspace) çalışır. Bu durum, he
 - **WireGuard**, doğrudan çekirdek içinde bir ağ arayüzü (`virtual network interface`) olarak çalışır.
 - Veri kopyalama işlemleri minimize edilir (**Zero-copy** yaklaşımları).
 - Bu sayede gecikme (latency) neredeyse yok seviyesine iner.
+
+*Kullanıcı Alanı (Userspace) Alternatifi (wireguard-go):* Çekirdek entegrasyonunun mümkün veya izinli olmadığı işletim sistemlerinde (macOS, FreeBSD, iOS, Android), WireGuard **wireguard-go** (Go dilinde yazılmış resmi sürüm) aracılığıyla kullanıcı alanında çalışabilir. Bu durumda bağlam geçişi (context switching) dezavantajı geri gelse de, protokolün minimalist tasarımı ve hafif kriptografik primitifleri sayesinde OpenVPN'e kıyasla hala çok daha yüksek performans sunar.
 
 ## 2. Çok Çekirdekli (Multi-core) Paralelleştirme
 Modern işlemcilerde çok fazla çekirdek vardır. Klasik VPN'ler genelde tek bir işlem akışına (thread) takılı kalırken:
@@ -26,5 +32,4 @@ WireGuard, çekirdek içinde sabit miktarda bellek kullanacak şekilde tasarlanm
 - Dinamik bellek ayırma (dynamic allocation) işlemlerinden kaçınır. Bu, hem "Memory Leak" (bellek sızıntısı) riskini ortadan kaldırır hem de sistemin öngörülebilir olmasını sağlar.
 - `sk_buff` (Linux socket buffer) yapısını çok verimli kullanarak paket işleme hattını (pipeline) optimize eder.
 
----
-[Sonraki Bölüm: Güvenlik ve Stealth Mode >>](06_guvenlik_ve_stealth.md)
+[<< Önceki Bölüm](04_cryptokey_routing.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](06_guvenlik_ve_stealth.md)

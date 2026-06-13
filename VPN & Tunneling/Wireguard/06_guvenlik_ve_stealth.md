@@ -1,5 +1,9 @@
 # Bölüm 6: Güvenlik, Stealth Mode ve DoS Koruması
 
+[<< Önceki Bölüm](05_mimari_performans.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](07_kurulum_linux_windows.md)
+
+---
+
 WireGuard, sadece şifreleme ile değil, aynı zamanda tünelin dış dünyadan nasıl göründüğü (veya görünmediği) ile de ilgilenir. Bu bölümde, "sessizlik" felsefesini ve DoS (Denial of Service) saldırılarına karşı savunma mekanizmalarını inceleyeceğiz.
 
 ## 1. Stealth Mode: Görünmezlik
@@ -35,5 +39,4 @@ WireGuard bir "sessiz" protokoldür; veri akışı yoksa paket göndermez. Ancak
 - **Çözüm**: `PersistentKeepalive = 25` ayarı.
 - **Neden 25 Saniye?**: Endüstri standardı NAT zaman aşımlarının alt sınırı olan 30 saniyenin hemen altındadır. Her 25 saniyede bir gönderilen küçük, şifreli ve kimliği doğrulanmış "boş" bir paket, NAT tablosundaki girdinin taze kalmasını sağlar.
 
----
-[Sonraki Bölüm: Kurulum Rehberi (Linux & Windows) >>](07_kurulum_linux_windows.md)
+[<< Önceki Bölüm](05_mimari_performans.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](07_kurulum_linux_windows.md)

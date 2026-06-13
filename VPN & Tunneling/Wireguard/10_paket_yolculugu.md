@@ -1,6 +1,8 @@
 # Bölüm 10: Çekirdek İçi Paket Yolculuğu ve Kuyruk Yönetimi
 
-[<< Önceki Bölüm: Derin Teknik Analiz](09_derin_teknik_analiz.md) | [Ana Sayfa >>](README.md)
+[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md)
+
+---
 
 
 Bu bölüm, WireGuard'ın Linux ağ yığını (Network Stack) içindeki tam yolculuğunu fonksiyon bazlı takip eder. Bu, protokolün en ince ayrıntısına kadar indiğimiz noktadır.
@@ -37,3 +39,6 @@ WireGuard, CPU çekirdeklerini nasıl verimli kullanır?
 ```
 
 Bu döngü, WireGuard'ın neden 10Gbps hızlarında bile düşük CPU kullanımıyla çalışabildiğinin cevabıdır.
+
+---
+[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md)

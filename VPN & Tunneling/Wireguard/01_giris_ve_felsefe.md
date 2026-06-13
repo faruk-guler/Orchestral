@@ -1,5 +1,9 @@
 # Bölüm 1: Giriş ve Minimalist Felsefe
 
+[Ana Sayfa](README.md) | [Sonraki Bölüm: Kriptografik Derin Dalış >>](02_kriptografi.md)
+
+---
+
 WireGuard, Jason A. Donenfeld tarafından geliştirilen ve "basitlik her şeydir" felsefesini savunan modern bir VPN protokolüdür. Linus Torvalds'ın tabiriyle, "bir sanat eseri" olarak nitelendirilir. Peki neden?
 
 ## 1. Geçmişin Hantallığı: IPsec ve OpenVPN
@@ -25,5 +29,4 @@ Geleneksel protokollerde "Crypto Agility" (kriptografik çeviklik) denen bir kav
 - **WireGuard bunu reddeder.**
 - WireGuard, modern ve güvenli olduğu kanıtlanmış sabit bir "paket" sunar. Eğer yarın bu algoritmalardan biri kırılırsa, WireGuard versiyon atlar ve herkes yeni sürüme geçer. Bu, "downgrade attack" (sürüm düşürme saldırısı) riskini tamamen ortadan kaldırır.
 
----
-[Sonraki Bölüm: Kriptografik Derin Dalış >>](02_kriptografi.md)
+[Ana Sayfa](README.md) | [Sonraki Bölüm: Kriptografik Derin Dalış >>](02_kriptografi.md)

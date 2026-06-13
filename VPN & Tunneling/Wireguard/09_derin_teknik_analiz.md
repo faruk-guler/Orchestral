@@ -1,6 +1,8 @@
 # Bölüm 9: Teknik Spesifikasyonlar ve Çekirdek (Kernel) Analizi
 
-[<< Önceki Bölüm: Pratik ve Debug](08_pratik_ve_debug.md) | [Sonraki Bölüm: Paket Yolculuğu >>](10_paket_yolculugu.md)
+[<< Önceki Bölüm](08_pratik_ve_debug.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](10_paket_yolculugu.md)
+
+---
 
 
 Bu bölüm, genel anlatımın ötesinde, protokolün bayt seviyesindeki yapısını ve Linux çekirdeğindeki (drivers/net/wireguard/) kritik fonksiyonları inceler.
@@ -35,9 +37,9 @@ UDP payload'unun tam haritası:
 ## 2. Linux Çekirdek Kod Analizi (`drivers/net/wireguard/`)
 
 ### 2.1. Paket Gönderimi: `wg_xmit()`
-Bir paket tünel arayüzüne (`wg0`) geldiğinde çekirdek `send.c` içindeki `wg_xmit` fonksiyonunu çağırır.
+Bir paket tünel arayüzüne (`wg0`) geldiğinde çekirdek `device.c` içindeki `wg_xmit` fonksiyonunu çağırır.
 ```c
-/* drivers/net/wireguard/send.c */
+/* drivers/net/wireguard/device.c */
 netdev_tx_t wg_xmit(struct sk_buff *skb, struct net_device *dev) {
     struct wg_device *wg = netdev_priv(dev);
     struct wg_peer *peer;
@@ -68,5 +70,4 @@ El sıkışma sırasında `ck` (Chaining Key) ve `h` (Hash) değerleri sürekli 
 
 Bu süreç, her mesajda yoldaki verinin bir özetini (transcript) tutarak, el sıkışmanın ortasında yapılacak bir değişikliği (Man-in-the-Middle) imkansız kılar.
 
----
-[Sonraki Bölüm: Çekirdek İçi Paket Yolculuğu >>](10_paket_yolculugu.md)
+[<< Önceki Bölüm](08_pratik_ve_debug.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](10_paket_yolculugu.md)
