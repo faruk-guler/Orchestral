@@ -18,14 +18,18 @@ Tüm WireGuard paketleri küçük bir başlık (header) ile başlar. İlk byte h
 - **MAC1/MAC2**: DoS koruması için kullanılan doğrulamalar (Bkz. Bölüm 6).
 
 ### B. Handshake Response (Tip: 2)
-Sunucunun (Responder) cevabıdır.
-- **Sender Index**: Sunucunun yerel ID'si.
+Sunucunun (Responder) cevabıdır ve sabit **92 bayt** boyutundadır.
+- **Sender Index**: Sunucunun yerel ID'si (32-bit).
 - **Receiver Index**: İstemcinin ilk pakette gönderdiği Sender Index.
 - **Ephemeral**: Sunucunun geçici public key'i.
+- **Encrypted Nothing**: Anahtar teyidi sağlamak için şifrelenmiş boş veri alanı (16 baytlık AEAD doğrulaması).
 - **MAC1/MAC2**: Sunucuyu koruyan doğrulamalar.
 
 ### C. Cookie Reply (Tip: 3)
-Eğer sunucu ağır bir yük (Load) altındaysa ve DoS saldırısı şüphesi varsa, el sıkışma paketini reddeder ve istemciye bir "Cookie" gönderir.
+Eğer sunucu ağır bir yük (Load) altındaysa ve DoS saldırısı şüphesi varsa, el sıkışma paketini reddeder ve istemciye sabit **64 bayt** boyutunda bir "Cookie Reply" paketi gönderir.
+- **Receiver Index**: Alıcının daha önceden belirlediği ID.
+- **Nonce**: Rastgele üretilen 24 baytlık değer (XChaCha20Poly1305 nonce).
+- **Encrypted Cookie**: Şifrelenmiş cookie değeri.
 
 ### D. Transport Data (Tip: 4)
 Asıl verinin (VPN trafiği) taşındığı değişken boyutlu pakettir.

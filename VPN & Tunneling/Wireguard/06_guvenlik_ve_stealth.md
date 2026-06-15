@@ -16,7 +16,7 @@ WireGuard tüneli açık olsa bile, bir saldırgan sunucunuzun UDP portunu tarad
 El sıkışma (Handshake) paketleri işlemci için maliyetlidir (Curve25519 hesaplaması). Bir saldırgan milyonlarca sahte handshake paketi göndererek sunucuyu yorabilir. WireGuard buna karşı iki katmanlı bir MAC (Message Authentication Code) sistemi kullanır:
 
 ### MAC1 (Kimlik Doğrulama)
-Her mesajda bulunur. Gönderen tarafın (Peer) public key'i üzerinden hesaplanır. Eğer bu MAC1 yanlışsa, paket daha CPU'yu yormadan hemen çöpe atılır.
+Her mesajda bulunur. Alıcının (alıcı tarafın) public key'i üzerinden hesaplanır (böylece paketin doğrudan bu sunucuya yönlendirildiği doğrulanır). Eğer bu MAC1 yanlışsa, paket daha CPU'yu yormadan hemen çöpe atılır.
 
 ### MAC2 (Cookie Mekanizması)
 Eğer sunucu yoğun yük altındaysa (Load threshold aşılmışsa):

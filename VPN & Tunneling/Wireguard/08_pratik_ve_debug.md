@@ -26,11 +26,15 @@ PresharedKey = <Opsiyonel_Kuantum_Koruması>
 - **PostUp/PostDown**: Tünel açıldığında ve kapandığında çalışan betiklerdir. Genellikle NAT ve yönlendirme (forwarding) için kullanılır.
   *Önemli Not: `PostUp` ve `PostDown` komutlarındaki `eth0` parametresini sunucunuzun internete bağlı olan gerçek dış ağ arayüzü adı (ör. `eth0`, `ens3`, `enp3s0` veya `wlan0`) ile değiştirmelisiniz. Aksi takdirde istemciler internete erişemez.*
 - **AllowedIPs**: Sunucu tarafında "bu istemci hangi iç IP'leri kullanabilir?" sorusuna yanıt verir.
+- **Table = off**: (Opsiyonel) `wg-quick` aracının varsayılan yönlendirme tablolarını (routing tables) otomatik oluşturmasını engeller. Kendi özel (custom) yönlendirme kurallarınızı yazacağınız karmaşık ağ topolojilerinde kritik bir ayardır.
 
 ## 2. MTU ve MSS Clamping (En Büyük Sorun)
 VPN tünelleri, paketin üzerine kendi başlıklarını (header) ekler. Bu durum, paketin orijinal MTU (genellikle 1500) boyutunu aşmasına neden olabilir.
 - **Semptom**: Web siteleri yavaş açılır veya SSH bağlantıları "donar".
-- **Çözüm**: MTU değerini manuel olarak 1420 veya 1280'e düşürmek (WireGuard başlığı 80 byte kaplar).
+- **Tünel Ek Yükü (Overhead) Hesabı**:
+  - **IPv4 için**: IP Başlığı (20B) + UDP Başlığı (8B) + WireGuard Veri Başlığı (16B) + Poly1305 Doğrulama Etiketi (16B) = **60 Bayt**.
+  - **IPv6 için**: IPv6 Başlığı (40B) + UDP Başlığı (8B) + WireGuard Veri Başlığı (16B) + Poly1305 Doğrulama Etiketi (16B) = **80 Bayt**.
+- **Çözüm**: Tünelin hem IPv4 hem de IPv6 paketlerini fragmente etmeden taşıyabilmesi için en güvenli senaryo olan IPv6 ek yükü (80 bayt) baz alınır. Standart 1500 MTU'lu bir hatta WireGuard MTU'su **1420** (1500 - 80) olarak ayarlanmalıdır. PPPoE gibi 1492 MTU kullanan ADSL/Fiber hatlarda ise bu değer **1412**'ye düşürülmelidir. Güvenli bir alt sınır olarak **1280** (IPv6'nın izin verdiği minimum MTU) da tercih edilebilir.
 - **MSS Clamping**: `iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu` komutu ile TCP paketlerinin MSS değerini otomatik ayarlamak en sağlıklı yoldur.
 
 ## 3. Hata Ayıklama (Troubleshooting)
@@ -46,12 +50,18 @@ VPN tünelleri, paketin üzerine kendi başlıklarını (header) ekler. Bu durum
 ### C. Çekirdek Logları
 Eğer çekirdek seviyesinde bir sorun varsa:
 `dmesg | tail` veya `journalctl -k` komutları WireGuard modülünün hata mesajlarını gösterir.
+
 ## 4. IP Yönlendirme (IP Forwarding)
-Linux sunucuda `sysctl -w net.ipv4.ip_forward=1` yapılmamışsa paketler tünelden dışarı (İnternete) çıkamaz.
+Linux sunucuda IPv4 için `sysctl -w net.ipv4.ip_forward=1` ve IPv6 için `sysctl -w net.ipv6.conf.all.forwarding=1` yapılmamışsa paketler tünelden dışarı (İnternete) çıkamaz.
 
 ## 5. DNS Güvenliği ve Kaçak (Leak) Önleme
 VPN'lerde en sık karşılaşılan sorun DNS sorgularının tünel dışına taşmasıdır.
 - **DNS Parametresi**: `[Interface]` altına `DNS = 1.1.1.1` eklemek, sistemin tüm DNS sorgularını tünel içine zorlamasını sağlar.
 - **IPv6 Sızıntısı**: Eğer sunucu IPv6 desteklemiyorsa, `AllowedIPs` kısmına `::/0` eklememek Windows'un native IPv6 üzerinden DNS sızdırmasına neden olabilir. Her zaman `AllowedIPs = 0.0.0.0/0, ::/0` kullanarak tüm yolları kapatın.
+
+## 6. Docker ve Konteyner Ortamı (Gotchas)
+WireGuard, çekirdek (kernel) seviyesinde çalıştığı için standart bir Docker konteynerinde doğrudan çalışamaz. İki seçeneğiniz vardır:
+1. Konteyneri `--cap-add=NET_ADMIN` yetkisiyle ve `--sysctl net.ipv4.ip_forward=1` parametresiyle başlatmak (Ayrıca host işletim sisteminde `wireguard` modülünün yüklü olması gerekir).
+2. Eğer host sistemde kernel erişiminiz yoksa, konteyner içinde `wireguard-go` veya `BoringTun` gibi kullanıcı alanı (userspace) alternatiflerini kullanmak.
 
 [<< Önceki Bölüm](07_kurulum_linux_windows.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](09_derin_teknik_analiz.md)

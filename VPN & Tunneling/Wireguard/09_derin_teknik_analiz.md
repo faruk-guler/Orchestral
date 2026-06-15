@@ -9,7 +9,7 @@ Bu bölüm, genel anlatımın ötesinde, protokolün bayt seviyesindeki yapısı
 
 ## 1. Paket Yapıları (Byte-Level Specification)
 
-WireGuard paketleri sabit boyutlu ve **Little-Endian** hizzasındadır.
+WireGuard paketleri sabit boyutlu ve **Little-Endian** hizasındadır.
 
 ### A. Handshake Initiation Packet (148 Bytes)
 UDP payload'unun tam haritası:
@@ -25,7 +25,30 @@ UDP payload'unun tam haritası:
 | 116 | 16 | `mac1` | `BLAKE2s(Hash(Label + ResponderPublicKey) + Payload)` |
 | 132 | 16 | `mac2` | DoS-Cookie (Eğer varsa) |
 
-### B. Transport Data Packet (Değişken Boyut)
+### B. Handshake Response Packet (92 Bytes)
+UDP payload'unun tam haritası:
+
+| Offset | Boyut | İsim | Açıklama |
+| :--- | :--- | :--- | :--- |
+| 0 | 1 | `type` | Her zaman `0x02` (Handshake Response) |
+| 1 | 3 | `reserved` | Sıfırlarla doldurulur (0x000000) |
+| 4 | 4 | `sender_index` | Sunucunun yerel 32-bit ID'si |
+| 8 | 4 | `receiver_index` | İstemcinin gönderdiği `sender_index` değeri |
+| 12 | 32 | `unencrypted_ephemeral` | Sunucunun geçici (ephemeral) public key'i |
+| 44 | 16 | `encrypted_nothing` | Anahtar teyidi için boş veri şifrelemesi (AEAD) |
+| 60 | 16 | `mac1` | `BLAKE2s(Hash(Label + InitiatorPublicKey) + Payload)` |
+| 76 | 16 | `mac2` | DoS-Cookie doğrulaması (Eğer varsa) |
+
+### C. Cookie Reply Packet (64 Bytes)
+| Offset | Boyut | İsim | Açıklama |
+| :--- | :--- | :--- | :--- |
+| 0 | 1 | `type` | Her zaman `0x03` (Cookie Reply) |
+| 1 | 3 | `reserved` | 0x000000 |
+| 4 | 4 | `receiver_index` | Alıcının daha önce bildirdiği ID |
+| 8 | 24 | `nonce` | Rastgele üretilen 24-byte nonce |
+| 32 | 32 | `encrypted_cookie` | Şifrelenmiş cookie değeri |
+
+### D. Transport Data Packet (Değişken Boyut)
 | Offset | Boyut | İsim | Açıklama |
 | :--- | :--- | :--- | :--- |
 | 0 | 1 | `type` | Her zaman `0x04` (Data) |

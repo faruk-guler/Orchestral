@@ -24,9 +24,10 @@ WireGuard'ın temel taşı **sadeliktir**. Yaklaşık **4.000 satır çekirdek (
 2.  **Performans**: Kullanıcı alanından (userspace) çekirdek alanına (kernel) bağlam geçişi (context switching) yapmaz. Bu, daha düşük gecikme (latency) ve daha yüksek bant genişliği demektir.
 3.  **Hız**: Modern işlemcilerde ChaCha20 gibi primitifler sayesinde AES-NI donanım hızlandırmasına bile ihtiyaç duymadan inanılmaz bir hız sunar.
 
-## 3. Kriptografik Çeviklik Yerine "Veledrom" Güvenliği
+## 3. Kriptografik Çeviklik Yerine "Veledrom" (Sabit ve Dönüşsüz Tasarım) Güvenliği
 Geleneksel protokollerde "Crypto Agility" (kriptografik çeviklik) denen bir kavram vardır. Sunucu ve istemci hangi şifrelemeyi kullanacaklarını tartışırlar.
 - **WireGuard bunu reddeder.**
-- WireGuard, modern ve güvenli olduğu kanıtlanmış sabit bir "paket" sunar. Eğer yarın bu algoritmalardan biri kırılırsa, WireGuard versiyon atlar ve herkes yeni sürüme geçer. Bu, "downgrade attack" (sürüm düşürme saldırısı) riskini tamamen ortadan kaldırır.
+- WireGuard, modern ve güvenli olduğu kanıtlanmış sabit bir "kripto paket" (cipher suite) sunar. Tıpkı bir **veledrom** (bisiklet pisti) gibi, tek bir şerit ve sabit kurallar vardır; virajlar veya alternatif yollar (farklı algoritma seçenekleri) bulunmaz.
+- Eğer yarın bu algoritmalardan biri kırılırsa, WireGuard protokol seviyesinde versiyon atlar ve herkes yeni sürüme geçer. Bu, saldırganların istemciyi daha zayıf şifrelere zorladığı "downgrade attack" (sürüm düşürme saldırısı) riskini tamamen ortadan kaldırır.
 
 [Ana Sayfa](README.md) | [Sonraki Bölüm: Kriptografik Derin Dalış >>](02_kriptografi.md)

@@ -12,7 +12,13 @@ OpenVPN gibi VPN'ler kullanıcı alanında (Userspace) çalışır. Bu durum, he
 - Veri kopyalama işlemleri minimize edilir (**Zero-copy** yaklaşımları).
 - Bu sayede gecikme (latency) neredeyse yok seviyesine iner.
 
-*Kullanıcı Alanı (Userspace) Alternatifi (wireguard-go):* Çekirdek entegrasyonunun mümkün veya izinli olmadığı işletim sistemlerinde (macOS, FreeBSD, iOS, Android), WireGuard **wireguard-go** (Go dilinde yazılmış resmi sürüm) aracılığıyla kullanıcı alanında çalışabilir. Bu durumda bağlam geçişi (context switching) dezavantajı geri gelse de, protokolün minimalist tasarımı ve hafif kriptografik primitifleri sayesinde OpenVPN'e kıyasla hala çok daha yüksek performans sunar.
+*Kullanıcı Alanı (Userspace) Alternatifleri (wireguard-go & BoringTun):* Çekirdek entegrasyonunun mümkün veya izinli olmadığı işletim sistemlerinde (macOS, iOS, Android veya Docker konteynerleri), WireGuard kullanıcı alanında çalışabilir.
+- **wireguard-go**: Go dilinde yazılmış resmi sürümdür.
+- **BoringTun**: Cloudflare tarafından Rust dili ile geliştirilmiş, özellikle yüksek trafikli sunucularda ve kurumsal altyapılarda `wireguard-go`'ya kıyasla çok daha yüksek performans sunan popüler bir alternatiftir.
+
+Bu durumda bağlam geçişi (context switching) dezavantajı geri gelse de, protokolün minimalist tasarımı sayesinde OpenVPN'e kıyasla hala çok daha yüksek performans sunar.
+
+*Not: Eskiden FreeBSD ve Windows da sadece userspace destekliyordu ancak günümüzde Windows için çok yüksek performanslı **`wireguard-nt`** kernel sürücüsü, FreeBSD/OpenBSD için de native kernel implementasyonları geliştirilmiş ve aktif olarak kullanılmaktadır.*
 
 ## 2. Çok Çekirdekli (Multi-core) Paralelleştirme
 Modern işlemcilerde çok fazla çekirdek vardır. Klasik VPN'ler genelde tek bir işlem akışına (thread) takılı kalırken:

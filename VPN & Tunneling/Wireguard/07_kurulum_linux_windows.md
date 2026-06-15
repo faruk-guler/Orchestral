@@ -6,7 +6,7 @@
 
 Bu bölümde, her iki platformda WireGuard'ı sıfırdan ayağa kaldırmayı ve ilk başarılı tüneli kurmayı öğreneceğiz.
 
-## 1. Linux Kurulumu (KMT: Komut Satırı)
+## 1. Linux Kurulumu (CLI: Komut Satırı)
 
 Linux'ta WireGuard, 5.6 sürümünden beri çekirdeğe (kernel) dahildir. Eski sürümlerde modül olarak yüklenir.
 
@@ -41,9 +41,9 @@ sudo systemctl enable wg-quick@wg0
 
 ---
 
-## 2. Windows Kurulumu (GUI)
+## 2. Windows Kurulumu (GUI ve Kernel Sürücüsü)
 
-Windows tarafında WireGuard, kullanıcı dostu bir arayüz ve sistem tepsisi (system tray) uygulaması sunar.
+Windows tarafında WireGuard, kullanıcı dostu bir arayüz ve sistem tepsisi (system tray) uygulaması sunar. Uygulama her ne kadar basit bir GUI gibi görünse de arka planda son derece performanslı **`wireguard-nt`** Windows kernel sürücüsüyle çalışır ve doğrudan işletim sistemi çekirdeğine entegredir.
 
 1.  **İndirme**: [wireguard.com/install](https://www.wireguard.com/install/) adresinden `.msi` yükleyicisini indir ve kur.
 2.  **Boş Tünel Ekle**: Uygulamayı aç, "Add Tunnel" yanındaki oka tıkla ve "Add empty tunnel..." seç.

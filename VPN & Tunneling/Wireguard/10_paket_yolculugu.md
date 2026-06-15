@@ -1,6 +1,6 @@
 # Bölüm 10: Çekirdek İçi Paket Yolculuğu ve Kuyruk Yönetimi
 
-[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md)
+[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](11_dinamik_yonlendirme_bgp_ospf.md)
 
 ---
 
@@ -29,6 +29,7 @@ Dışarıdan bir UDP paketi 51820 portuna geldiğinde:
 WireGuard, CPU çekirdeklerini nasıl verimli kullanır?
 - **Sıralı İşleme (Ordering)**: Şifreleme paralel yapılsa bile, paketlerin tünelden orijinal sırasıyla çıkması zorunludur. WireGuard bunun için paketlere bir `sequence number` ekler ve çıkışta bunları sıraya dizer.
 - **Yük Dengeleme**: Her işlemci çekirdeği için ayrı bir `workqueue` oluşturulur. Bu da tek bir CPU'nun darboğaz (bottleneck) olmasını engeller.
+- **SIMD / FPU Kullanımı**: İşlemci çekirdeği şifreleme/şifre çözme işlemi yaparken, performansı katlamak için AVX512, Neon vb. özel donanım komut setlerini (SIMD) kullanır. Bu sırada Linux çekirdeğinde bağlamın bozulmaması için geçici olarak `kernel_fpu_begin()` ve işlem bitince `kernel_fpu_end()` çağrılarak, "Floating Point Unit" (FPU) yazmaçları donanım seviyesinde korunur.
 
 ## 4. Akış Özeti (Function Trace)
 ```text
@@ -41,4 +42,4 @@ WireGuard, CPU çekirdeklerini nasıl verimli kullanır?
 Bu döngü, WireGuard'ın neden 10Gbps hızlarında bile düşük CPU kullanımıyla çalışabildiğinin cevabıdır.
 
 ---
-[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md)
+[<< Önceki Bölüm](09_derin_teknik_analiz.md) | [Ana Sayfa](README.md) | [Sonraki Bölüm >>](11_dinamik_yonlendirme_bgp_ospf.md)

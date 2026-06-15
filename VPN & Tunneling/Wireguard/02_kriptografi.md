@@ -7,12 +7,13 @@
 WireGuard'ın derinlemesine teknik detaylarına inmek için onun kalbini, yani kriptografik primitiflerini ve **Noise Protocol Framework**'ü anlamalısın. WireGuard, bir eldiven gibi birbirine uyan seçkin bir algoritma seti kullanır.
 
 ## 1. Noise Protocol Framework (Noise_IK)
-WireGuard, kendi el sıkışma protokolünü sıfırdan yazmak yerine modern bir standart olan **Noise Protocol Framework** üzerine inşa edilmiştir. Özel olarak **Noise_IK** desenini kullanır.
+WireGuard, kendi el sıkışma protokolünü sıfırdan yazmak yerine modern bir standart olan **Noise Protocol Framework** üzerine inşa edilmiştir. Özel olarak **Noise_IK** (Interactive Handshake - Identity / Known Key) desenini kullanır.
 
-- **I (Identity)**: İstemci, sunucunun statik anahtarını bildiği varsayımıyla (pre-known) ilk mesajda kendi kimliğini (public key) gönderir.
-- **K (Known)**: Sunucu, istemcinin kimliğini zaten listesinde (AllowedIPs) barındırıyorsa kabul eder.
+Noise desen adındaki karakterlerin anlamları:
+- **I (Identity/Initiator)**: İstemci (Initiator), ilk el sıkışma mesajında kendi statik kimliğini (public key) şifreli bir biçimde karşıya gönderir.
+- **K (Known)**: Sunucu (Responder), istemcinin statik anahtarını önceden bilmektedir (AllowedIPs tablosunda tanımlıdır) ve istemci de sunucunun statik anahtarını zaten bilerek el sıkışmayı başlatır.
 
-Bu yapı sayesinde WireGuard **1-RTT (Round Trip Time)** hızında el sıkışır. Yani sadece karşılıklı birer paket gönderildiğinde bağlantı kurulmuş olur.
+Bu önceden bilinen anahtar çifti ilişkisi ve tek aşamalı doğrulama yapısı sayesinde WireGuard **1-RTT (Round Trip Time)** hızında el sıkışır. Yani sadece karşılıklı birer paket gönderildiğinde (1 gidiş - 1 dönüş) ortak gizli anahtar türetilmiş ve güvenli tünel kurulmuş olur.
 
 ## 2. Kullanılan Algoritmalar (Primitifler)
 
