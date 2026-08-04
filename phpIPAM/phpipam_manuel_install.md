@@ -1,4 +1,4 @@
-# Debian 13 (Trixie) Nginx + PHP-FPM + MariaDB ile phpIPAM
+# phpIPAM on Debian 13 (Trixie) Nginx + PHP-FPM + MariaDB
 
 **phpIPAM**, web tabanlı, açık kaynaklı ve modüler bir IP Adres Yönetim (IPAM - IP Address Management) yazılımıdır.
 
@@ -26,6 +26,32 @@ sudo apt install -y php-fpm php-cli php-common php-mysql php-gmp php-gd php-curl
 
 # 1.4 Servisleri Başlatın ve Otomatik Açılışa Ekleyin
 sudo systemctl enable --now nginx mariadb php8.4-fpm snmpd
+```
+
+---
+
+### Adım 2: PHP-FPM Ayarları (php.ini)
+
+phpIPAM'in büyük IP bloklarını ve dosya içe/dışa aktarımlarını sorunsuz işleyebilmesi için PHP limitlerini düzenleyin:
+
+```bash
+sudo nano /etc/php/8.4/fpm/php.ini
+```
+
+Aşağıdaki değerleri güncelleyin/doğrulayın:
+
+```ini
+memory_limit = 256M
+upload_max_filesize = 32M
+post_max_size = 32M
+max_execution_time = 300
+date.timezone = Europe/Istanbul
+```
+
+PHP-FPM servisini yeniden başlatın:
+
+```bash
+sudo systemctl restart php8.4-fpm
 ```
 
 ---
@@ -99,9 +125,6 @@ $db['port'] = 3306;
 
 // Debian 13 PHP 8.4 uyumluluk bypass'ı (phpIPAM 1.7.4 henüz PHP 8.4'ü resmi desteklemiyor)
 $allow_untested_php_versions=true;
-
-// Ek Güvenlik Katmanı: Kurulum modülünü devre dışı bırak
-$disable_installer = true;
 ```
 
 *(Not: Dizideki anahtar `$db['pass']` olmalıdır).*
@@ -185,12 +208,16 @@ sudo systemctl reload nginx
 
 ---
 
-### Adım 7: Kurulum Sonrası Kritik Güvenlik Temizliği
+### Adım 7: Kurulum Sonrası Kritik Güvenlik Sıkılaştırması
 
-Kurulum bittikten sonra güvenlik için `install` klasörünü silin:
+Web arayüzü ile veritabanı kurulumu tamamlandıktan sonra, güvenlik için `install` dizinini silin ve `config.php` dosyasına kurulum kilidini ekleyin:
 
 ```bash
+# 1. Install dizinini silin
 sudo rm -rf /var/www/ipam/install
+
+# 2. config.php dosyasına kurulum kilit bayrağını ekleyin
+echo "\$disable_installer = true;" | sudo tee -a /var/www/ipam/config.php
 ```
 
 ---
@@ -261,7 +288,7 @@ Ardından root kullanıcısının crontab'ına (`sudo crontab -e`) cron görevle
 
 ```cron
 # Her gece saat 02:00'de yedek al ve 10 günden eski yedekleri otomatik temizle
-0 2 * * * /usr/bin/mariadb-dump phpipam > /var/backups/phpipam_$(date +\%Y\%m\%d).sql
+0 2 * * * /usr/bin/mariadb-dump phpipam > /var/backups/phpipam_$(date +\%F).sql
 0 3 * * * /usr/bin/find /var/backups/ -name "phpipam_*.sql" -mtime +10 -exec rm {} \;
 ```
 

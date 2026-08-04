@@ -1,4 +1,4 @@
-# phpIPAM Docker & Docker Compose Container (Debian 13)
+# phpIPAM on Docker Container Debian 13 (Trixie)
 
 **phpIPAM**, web tabanlı, açık kaynaklı ve modüler bir IP Adres Yönetim (IPAM - IP Address Management) yazılımıdır.
 
@@ -82,11 +82,8 @@ $db['name'] = getenv("IPAM_DATABASE_NAME") ?: "phpipam";
 $db['port'] = 3306;
 $db['webhost'] = "%";
 
-// Debian 13 PHP 8.4 uyumluluk bypass'ı (phpIPAM henüz PHP 8.4'ü resmi desteklemiyor)
+// Gelecekteki imaj güncellemeleri için test edilmemiş PHP sürümlerine izin verme tedbiri
 $allow_untested_php_versions=true;
-
-// Ek Güvenlik Katmanı: Kurulum modülünü devre dışı bırak
-$disable_installer = true;
 ?>
 ```
 
@@ -203,6 +200,12 @@ sudo docker compose ps
    - **Varsayılan Şifre:** `ipamadmin`
    - Giriş yaptıktan sonra şifrenizi değiştirin.
 2. **Panel İçi Yol Ayarları (Kritik):** Taramaların çalışabilmesi için **Administration > phpIPAM settings** menüsünden **Ping path** (`/usr/bin/ping`) ve **FPing path** (`/usr/bin/fping`) alanlarının dolu ve doğru olduğundan emin olun.
+3. **Kurulum Kilidini Etkinleştirme (Güvenlik):** Web kurulumu tamamlandıktan sonra `config.php` dosyanıza kurulum kilit bayrağını ekleyin:
+
+   ```bash
+   echo "\$disable_installer = true;" | sudo tee -a /opt/phpipam/config.php
+   sudo docker compose restart phpipam-web
+   ```
 
 ---
 
@@ -241,8 +244,13 @@ sudo docker compose up -d
 ```
 
 - Tarayıcıdan `http://SUNUCU_IP:81` portuna girin (Varsayılan: `admin@example.com` / `changeme`).
-- **Proxy Hosts -> Add Proxy Host** adımlarını izleyerek `ipam.domaininiz.com` adresini **`http://phpipam-web:80`** hedefine yönlendirin. (Aynı proxy-net ağında oldukları için doğrudan konteyner adını kullanabilirsiniz).
-- **SSL -> Request a new SSL Certificate (Let's Encrypt)** seçeneğini işaretleyip kaydedin.
+- **Proxy Hosts -> Add Proxy Host** butonuna tıklayın ve alanları doldurun:
+  - **Domain Names:** `ipam.domaininiz.com`
+  - **Scheme:** `http`
+  - **Forward Hostname / IP:** `phpipam-web` (Aynı `proxy-net` ağında oldukları için direkt konteyner adı)
+  - **Forward Port:** `80`
+  - **Block Common Exploits:** İşaretleyin
+- **SSL Sekmesi:** **Request a new SSL Certificate (Let's Encrypt)** seçeneğini işaretleyip **Save** ile kaydedin.
 
 ---
 
@@ -272,7 +280,7 @@ sudo docker compose up -d
   Host sunucunun `sudo crontab -e` dosyasına ekleyebilirsiniz:
 
   ```cron
-  0 2 * * * docker exec phpipam-db mariadb-dump -u root -pGuvenliRootSifreniz123! phpipam > /var/backups/phpipam_docker_$(date +\%Y\%m\%d).sql
+  0 2 * * * docker exec phpipam-db mariadb-dump -u root -pGuvenliRootSifreniz123! phpipam > /var/backups/phpipam_docker_$(date +\%F).sql
   0 3 * * * find /var/backups/ -name "phpipam_docker_*.sql" -mtime +10 -exec rm {} \;
   ```
 
@@ -308,6 +316,9 @@ Nginx Proxy Manager yerine Caddy Server kullanmak isterseniz `docker-compose.yml
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./caddy_data:/data
+      - ./caddy_config:/config
     networks:
       - proxy-net
     command: caddy reverse-proxy --from ipam.domaininiz.com --to phpipam-web:80
