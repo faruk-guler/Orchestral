@@ -127,6 +127,7 @@ services:
       IPAM_DATABASE_PASS: GuvenliDbSifreniz123!
       IPAM_DATABASE_NAME: phpipam
       IPAM_DATABASE_WEBHOST: "%"
+      IPAM_INSTALL_TYPE: auto
       TZ: Europe/Istanbul
     volumes:
       - ./config.php:/phpipam/config.php
