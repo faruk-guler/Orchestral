@@ -101,7 +101,7 @@ sudo git submodule update --init --recursive
 # 3.3 İzinleri ve Sahipliği Ayarlayın (Debian Nginx kullanıcısı: www-data)
 sudo chown -R www-data:www-data /var/www/ipam
 sudo find /var/www/ipam -type d -exec chmod 755 {} \;
-sudo find /var/www/ipam -type f -exec chmod 644 {} \;
+sudo find /var/www/ipam -type f -exec chmod 640 {} \;
 ```
 
 ---
