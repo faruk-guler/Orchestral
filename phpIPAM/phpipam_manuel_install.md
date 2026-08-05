@@ -56,7 +56,7 @@ sudo systemctl restart php8.4-fpm
 
 ---
 
-### Adım 2: Veritabanı (MariaDB) Yapılandırması
+### Adım 3: Veritabanı (MariaDB) Yapılandırması
 
 #### 2.1 MariaDB Güvenlik Sıkılaştırma
 
@@ -86,7 +86,7 @@ EXIT;
 
 ---
 
-### Adım 3: phpIPAM Kodlarının İndirilmesi ve İzinler
+### Adım 4: phpIPAM Kodlarının İndirilmesi ve İzinler
 
 ```bash
 # 3.1 GitHub Deposunu Klonlayın
@@ -106,7 +106,7 @@ sudo find /var/www/ipam -type f -exec chmod 640 {} \;
 
 ---
 
-### Adım 4: phpIPAM Konfigürasyonu (`config.php`)
+### Adım 5: phpIPAM Konfigürasyonu (`config.php`)
 
 ```bash
 cd /var/www/ipam
@@ -133,7 +133,7 @@ Kaydedip çıkın (`Ctrl + O`, `Enter`, `Ctrl + X`).
 
 ---
 
-### Adım 5: Nginx Web Sunucusu Yapılandırması
+### Adım 6: Nginx Web Sunucusu Yapılandırması
 
 Nginx konfigürasyon dosyasını oluşturun:
 
@@ -195,7 +195,7 @@ sudo systemctl reload nginx
 
 ---
 
-### Adım 6: Web Arayüzü ile Kurulumu Tamamlama
+### Adım 7: Web Arayüzü ile Kurulumu Tamamlama
 
 1. Tarayıcınızdan `http://SUNUCU_IP/` adresine gidin.
 2. Ekranda **New phpipam installation** butonuna tıklayın.
@@ -208,7 +208,7 @@ sudo systemctl reload nginx
 
 ---
 
-### Adım 7: Kurulum Sonrası Kritik Güvenlik Sıkılaştırması
+### Adım 8: Kurulum Sonrası Kritik Güvenlik Sıkılaştırması
 
 Web arayüzü ile veritabanı kurulumu tamamlandıktan sonra, güvenlik için `install` dizinini silin ve `config.php` dosyasına kurulum kilidini ekleyin:
 
@@ -222,7 +222,7 @@ echo "\$disable_installer = true;" | sudo tee -a /var/www/ipam/config.php
 
 ---
 
-### Adım 8: Otomatik Taramalar (fping SUID & Cron Jobs)
+### Adım 9: Otomatik Taramalar (fping SUID & Cron Jobs)
 
 #### 8.1 fping SUID İzni
 
@@ -294,7 +294,7 @@ Ardından root kullanıcısının crontab'ına (`sudo crontab -e`) cron görevle
 
 ---
 
-### Adım 9: Güvenlik Duvarı (UFW) Yapılandırması
+### Adım 10: Güvenlik Duvarı (UFW) Yapılandırması
 
 ```bash
 sudo ufw allow 22/tcp
@@ -305,7 +305,7 @@ sudo ufw --force enable
 
 ---
 
-### Adım 10: HTTPS / SSL Sertifikası (Certbot)
+### Adım 11: HTTPS / SSL Sertifikası (Certbot)
 
 Domain adınız aktif ise ücretsiz Let's Encrypt SSL sertifikasını etkinleştirin:
 
