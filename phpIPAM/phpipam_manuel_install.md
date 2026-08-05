@@ -58,7 +58,7 @@ sudo systemctl restart php8.4-fpm
 
 ### Adım 3: Veritabanı (MariaDB) Yapılandırması
 
-#### 2.1 MariaDB Güvenlik Sıkılaştırma
+#### 3.1 MariaDB Güvenlik Sıkılaştırma
 
 ```bash
 sudo mariadb-secure-installation
@@ -66,7 +66,7 @@ sudo mariadb-secure-installation
 
 *(Sorulara: Root şifresi belirlemek için `Y`, kalan tüm sorulara `Y` yanıtını verin).*
 
-#### 2.2 Veritabanı ve Kullanıcı Oluşturma
+#### 3.2 Veritabanı ve Kullanıcı Oluşturma
 
 MariaDB konsoluna bağlanın:
 
@@ -89,16 +89,16 @@ EXIT;
 ### Adım 4: phpIPAM Kodlarının İndirilmesi ve İzinler
 
 ```bash
-# 3.1 GitHub Deposunu Klonlayın
+# 4.1 GitHub Deposunu Klonlayın
 cd /var/www
 sudo git clone --recursive https://github.com/phpipam/phpipam.git ipam
 
-# 3.2 Kararlı Dala Geçin
+# 4.2 Kararlı Dala Geçin
 cd /var/www/ipam
 sudo git checkout master
 sudo git submodule update --init --recursive
 
-# 3.3 İzinleri ve Sahipliği Ayarlayın (Debian Nginx kullanıcısı: www-data)
+# 4.3 İzinleri ve Sahipliği Ayarlayın (Debian Nginx kullanıcısı: www-data)
 sudo chown -R www-data:www-data /var/www/ipam
 sudo find /var/www/ipam -type d -exec chmod 755 {} \;
 sudo find /var/www/ipam -type f -exec chmod 640 {} \;
@@ -224,13 +224,13 @@ echo "\$disable_installer = true;" | sudo tee -a /var/www/ipam/config.php
 
 ### Adım 9: Otomatik Taramalar (fping SUID & Cron Jobs)
 
-#### 8.1 fping SUID İzni
+#### 9.1 fping SUID İzni
 
 ```bash
 sudo chmod +s /usr/bin/fping
 ```
 
-#### 8.2 Cron Görevlerini Tanımlama
+#### 9.2 Cron Görevlerini Tanımlama
 
 `www-data` kullanıcısı için crontab düzenleyin:
 
@@ -251,7 +251,7 @@ Gelen dosyaya ekleyin:
 0 0 * * * /usr/bin/php /var/www/ipam/functions/scripts/resolveIPaddresses.php > /dev/null 2>&1
 ```
 
-#### 8.3 Panel İçi Ping ve FPing Yol Ayarları (Kritik)
+#### 9.3 Panel İçi Ping ve FPing Yol Ayarları (Kritik)
 
 Arayüzden otomatik taramaların çalışabilmesi için panel içerisinden binary yollarını doğrulayın:
 
@@ -262,7 +262,7 @@ Arayüzden otomatik taramaların çalışabilmesi için panel içerisinden binar
    - **FPing path:** `/usr/bin/fping`
 3. Ayarları kaydedin.
 
-#### 8.4 Otomatik Veritabanı Yedekleme Cron'u (Önerilen)
+#### 9.4 Otomatik Veritabanı Yedekleme Cron'u (Önerilen)
 
 Cron satırlarında ve işlem listesinde (`ps aux`) şifrenin düz metin olarak görünmemesi için şifrelerinizi bir konfigürasyon dosyasına yazın:
 
