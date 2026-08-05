@@ -201,7 +201,8 @@ sudo docker compose ps
 3. **Kurulum Kilidini Etkinleştirme (Güvenlik):** Web kurulumu tamamlandıktan sonra `config.php` dosyanıza kurulum kilit bayrağını ekleyin:
 
    ```bash
-   #echo "\$disable_installer = true;" | sudo tee -a /opt/phpipam/config.php
+   sudo nano /opt/phpipam/config.php
+   $disable_installer = true;
    sudo docker compose restart phpipam-web
    ```
 
