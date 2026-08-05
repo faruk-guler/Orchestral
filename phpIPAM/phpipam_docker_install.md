@@ -76,8 +76,8 @@ Aşağıdaki içeriği yapıştırın:
 ```php
 <?php
 $db['host'] = getenv("IPAM_DATABASE_HOST") ?: "phpipam-db";
-$db['user'] = getenv("IPAM_DATABASE_USER") ?: "phpipam";
-$db['pass'] = getenv("IPAM_DATABASE_PASS") ?: "GuvenliDbSifreniz123!";
+$db['user'] = getenv("IPAM_DATABASE_USER") ?: "root";
+$db['pass'] = getenv("IPAM_DATABASE_PASS") ?: "GuvenliRootSifreniz123!";
 $db['name'] = getenv("IPAM_DATABASE_NAME") ?: "phpipam";
 $db['port'] = 3306;
 $db['webhost'] = "%";
