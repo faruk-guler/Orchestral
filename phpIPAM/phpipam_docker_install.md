@@ -108,9 +108,6 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: GuvenliRootSifreniz123!
-      MYSQL_DATABASE: phpipam
-      MYSQL_USER: phpipam
-      MYSQL_PASSWORD: GuvenliDbSifreniz123!
     volumes:
       - phpipam-db-data:/var/lib/mysql
 
@@ -123,8 +120,8 @@ services:
     #   - "8080:80" # Güvenlik için dışarı kapalı, Nginx/Caddy proxy üzerinden erişilecek
     environment:
       IPAM_DATABASE_HOST: phpipam-db
-      IPAM_DATABASE_USER: phpipam
-      IPAM_DATABASE_PASS: GuvenliDbSifreniz123!
+      IPAM_DATABASE_USER: root
+      IPAM_DATABASE_PASS: GuvenliRootSifreniz123!
       IPAM_DATABASE_NAME: phpipam
       IPAM_DATABASE_WEBHOST: "%"
       IPAM_INSTALL_TYPE: auto
@@ -149,8 +146,8 @@ services:
     restart: unless-stopped
     environment:
       IPAM_DATABASE_HOST: phpipam-db
-      IPAM_DATABASE_USER: phpipam
-      IPAM_DATABASE_PASS: GuvenliDbSifreniz123!
+      IPAM_DATABASE_USER: root
+      IPAM_DATABASE_PASS: GuvenliRootSifreniz123!
       IPAM_DATABASE_NAME: phpipam
       SCAN_INTERVAL: 1h
       TZ: Europe/Istanbul
