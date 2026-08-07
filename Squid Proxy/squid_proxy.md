@@ -2,7 +2,7 @@
 
 **Squid**, istemcilerin internete çıkışını düzenleyen yüksek performanslı, açık kaynaklı bir **ileri proxy (forward proxy)**, önbellekleme (caching) ve içerik filtreleme sunucusudur. İçerideki cihazların dışarıya (internete) nasıl çıkacağını kontrol eder, IP adresinizi gizler (anonim proxy) ve yerel ağdaki bant genişliğini optimize eder.
 
-Bu rehber, **Debian 13 (Trixie)** üzerinde Squid Proxy'nin doğrudan paket yöneticisi ile kurulumunu, Basic Auth kimlik doğrulamasını, Elite Proxy (yüksek anonimlik) yapılandırmasını ve güvenlik kurallarını kapsamaktadır.
+Bu rehber, **Debian 13 (Trixie)** üzerinde Squid Proxy'nin doğrudan paket yöneticisi ile kurulumunu, Basic Auth kimlik doğrulamasını, Elite Proxy (yüksek anonimlik), HTTPS filtreleme, cache ve güvenlik sertleştirme yapılandırmasını kapsamaktadır.
 
 ---
 
@@ -47,6 +47,8 @@ http_port 3128
 http_port 8080
 ```
 
+> 💡 **Not:** Portu değiştirirseniz bu rehberin ilerleyen adımlarındaki (Güvenlik Duvarı, Test, İstemci Yapılandırması) tüm `3128` referanslarını da kendi port numaranızla güncellemeyi unutmayın.
+
 ---
 
 ### Adım 3: IP Bazlı Erişim İzni Verme (ACL)
@@ -64,10 +66,12 @@ http_access allow allowed_clients
 http_access deny all
 ```
 
-Ayarları uygulayın:
+> ⚠️ **Dikkat:** Debian'ın varsayılan `squid.conf` dosyasında zaten `acl localnet`, `acl SSL_ports`, `acl Safe_ports` gibi hazır kurallar bulunur. Bu ACL'i eklerken bu varsayılan satırları **silmeyin** — özellikle `SSL_ports`/`CONNECT` kısıtlaması kaldırılırsa proxy'niz her porta tünelleme yapabilen güvensiz bir yapıya dönüşür.
+
+Ayarları uygulamadan önce mutlaka sözdizimini kontrol edin, sonra uygulayın:
 
 ```bash
-sudo systemctl reload squid
+sudo squid -k parse && sudo systemctl reload squid
 ```
 
 ---
@@ -111,10 +115,10 @@ http_access allow authenticated_users
 
 *(Önemli: `http_access deny all` kuralının dosyanın en sonunda kaldığından emin olun, çünkü Squid kuralları yukarıdan aşağıya doğru okur.)*
 
-Değişiklikleri uygulayın:
+Değişiklikleri uygulamadan önce doğrulayın:
 
 ```bash
-sudo systemctl restart squid
+sudo squid -k parse && sudo systemctl restart squid
 ```
 
 ---
@@ -141,11 +145,15 @@ request_header_access Content-Type allow all
 request_header_access All deny all
 ```
 
-Servisi yeniden başlatın:
+> 💡 **Not:** `forwarded_for off` zaten `X-Forwarded-For` başlığının eklenmesini engeller; `request_header_access` satırı buna ek bir güvenlik katmanı olarak eklenmiştir (redundant ama zararsız).
+>
+> ⚠️ **Uyarı:** `request_header_access` gibi HTTP standardını "ihlal eden" (violation) directive'ler Squid'in `--enable-http-violations` derleme bayrağı ile aktif olur. Debian'ın resmi paketi bunu varsayılan olarak destekler, ancak yine de değişiklikten sonra parse kontrolü şart:
 
 ```bash
-sudo systemctl restart squid
+sudo squid -k parse && sudo systemctl restart squid
 ```
+
+> 🔓 **Güvenlik Notu:** İnternete açık, kimlik doğrulamasız (sadece IP whitelist ile) çalışan bir "Elite Proxy" yanlış yapılandırılırsa açık/anonim bir relay'e dönüşüp kötüye kullanılabilir (spam, saldırı gizleme vb.). Mutlaka Adım 4 (Basic Auth) veya sıkı IP kısıtlaması ile birlikte kullanın.
 
 ---
 
@@ -172,15 +180,109 @@ acl blocked_domains dstdomain "/etc/squid/blocked_sites.txt"
 http_access deny blocked_domains
 ```
 
-Yapılandırmayı yeniden yükleyin:
+Yapılandırmayı doğrulayıp yeniden yükleyin:
 
 ```bash
-sudo systemctl reload squid
+sudo squid -k parse && sudo systemctl reload squid
 ```
+
+> ⚠️ **Önemli Kısıtlama:** Bu kural yalnızca **düz HTTP** trafiğinde ve HTTPS `CONNECT` isteğinin hedef domain bilgisinde çalışır. Günümüzde trafiğin büyük çoğunluğu HTTPS olduğu için, sitelerin içeriğini (path, sayfa içi filtreleme) görebilmek için **Adım 7 (SSL Bump)** gereklidir. `dstdomain` tabanlı bu kural HTTPS sitelerde sadece CONNECT hedefine bakar, bu da çoğu durumda yeterlidir ama tam filtreleme değildir.
 
 ---
 
-### Adım 7: Güvenlik Duvarı Yapılandırması
+### Adım 7: HTTPS Trafiğini Filtreleme (SSL Bump)
+
+Squid, varsayılan olarak HTTPS trafiğini sadece tünelleyip (`CONNECT`) içeriğine bakamaz. Domain bazlı engellemeyi HTTPS'e taşımak için iki yöntem vardır:
+
+#### 7.1 Hafif Yöntem — SNI Bazlı Filtreleme (Önerilen, MITM Yok)
+
+Sertifikayı hiç açmadan, istemcinin gönderdiği SNI (Server Name Indication) bilgisinden domain okuyup engelleme yapılır. İstemcilere sertifika dağıtmaya gerek yoktur:
+
+```text
+acl blocked_sni ssl::server_name "/etc/squid/blocked_sites.txt"
+
+http_port 3128 ssl-bump
+acl step1 at_step SslBump1
+ssl_bump peek step1
+ssl_bump splice all
+
+http_access deny blocked_sni
+```
+
+#### 7.2 Tam Yöntem — SSL Bump (MITM, İleri Seviye)
+
+Trafiğin içeriğini (URL path, sayfa içeriği) görmek için Squid'in araya girip sertifikayı yeniden imzalaması gerekir. Bunun için kendi kök sertifikanızı üretip **her istemciye** güvenilir kök sertifika olarak yüklemeniz gerekir.
+
+```bash
+# Kök sertifika (CA) oluşturma
+sudo mkdir -p /etc/squid/ssl_cert
+cd /etc/squid/ssl_cert
+sudo openssl req -new -newkey rsa:2048 -sha256 -days 3650 -nodes -x509 \
+  -keyout squidCA.pem -out squidCA.pem \
+  -subj "/C=TR/O=SirketAdi/CN=Squid Proxy CA"
+sudo openssl x509 -in squidCA.pem -outform DER -out squidCA.der
+
+# Sertifika önbellek veritabanı (sslcrtd)
+sudo /usr/lib/squid/security_file_certgen -c -s /var/spool/squid/ssl_db -M 4MB
+sudo chown -R proxy:proxy /var/spool/squid/ssl_db
+```
+
+`squid.conf` içine:
+
+```text
+http_port 3128 ssl-bump cert=/etc/squid/ssl_cert/squidCA.pem generate-host-certificates=on
+sslcrtd_program /usr/lib/squid/security_file_certgen -s /var/spool/squid/ssl_db -M 4MB
+
+acl step1 at_step SslBump1
+ssl_bump peek step1
+ssl_bump bump blocked_domains
+ssl_bump splice all
+```
+
+```bash
+sudo squid -k parse && sudo systemctl restart squid
+```
+
+`squidCA.der` dosyasını istemcilere kök sertifika olarak yükleyin:
+- **Windows:** `certutil -addstore -f "ROOT" squidCA.der`
+- **Debian/Linux:** `.crt` uzantısıyla `/usr/local/share/ca-certificates/` içine kopyalayıp `sudo update-ca-certificates`
+- **Mobil (iOS/Android):** Profil olarak yükleyip "güvenilir kök sertifika" olarak onaylatmak gerekir.
+
+> 🔴 **Kritik Uyarı — Hukuki/Politika Boyutu:** Tam SSL Bump, kullanıcıların şifreli trafiğini gerçek zamanlı olarak deşifre eder (MITM). Bu:
+> - Sertifika pinning kullanan uygulamaları (bankacılık, bazı mobil uygulamalar) kırar.
+> - KVKK/GDPR kapsamında çalışan/kullanıcı bilgilendirmesi ve genelde yazılı onay gerektirir — sadece teknik bir adım değil, bir politika kararıdır.
+> - Kurumsal olmayan (ev/kişisel) kullanımda genelde gereksizdir; çoğu senaryoda 7.1'deki SNI yöntemi yeterlidir.
+
+---
+
+### Adım 8: Cache (Önbellekleme) Yapılandırması
+
+Squid'in temel işlevlerinden biri caching'dir, ancak varsayılan kurulumda disk cache kapalıdır. `squid.conf` dosyasının uygun bir yerine ekleyin:
+
+```text
+# RAM cache (sık erişilen küçük objeler için)
+cache_mem 256 MB
+maximum_object_size_in_memory 512 KB
+
+# Disk cache: ufs tipi, /var/spool/squid dizini, 10000 MB, 16 alt klasör, 256 alt-alt klasör
+cache_dir ufs /var/spool/squid 10000 16 256
+maximum_object_size 100 MB
+```
+
+Disk cache dizinlerini **ilk kez** oluşturmak için Squid durdurulup `-z` parametresiyle initialize edilmelidir — bu adım atlanırsa Squid başlamaz veya cache çalışmaz:
+
+```bash
+sudo squid -k parse
+sudo systemctl stop squid
+sudo squid -z
+sudo systemctl start squid
+```
+
+> 💡 **Not:** `squid -z` sadece cache dizinleri ilk kez oluşturulduğunda veya `cache_dir` boyutu/yolu değiştiğinde çalıştırılır, her reload'da gerekmez.
+
+---
+
+### Adım 9: Güvenlik Duvarı Yapılandırması
 
 Kullandığınız güvenlik duvarı çözümünde (UFW, iptables, FortiGate, pfSense vb.) aşağıdaki portlara izin verin:
 
@@ -189,13 +291,22 @@ Kullandığınız güvenlik duvarı çözümünde (UFW, iptables, FortiGate, pfS
 | **22** | TCP | SSH Uzak Erişim |
 | **3128** | TCP | Squid Proxy (varsayılan) |
 
+Örnek UFW komutları (sadece belirli kaynak IP'ye izin vererek):
+
+```bash
+sudo ufw allow from 185.190.10.45 to any port 3128 proto tcp
+sudo ufw allow 22/tcp
+sudo ufw enable
+sudo ufw status verbose
+```
+
 > 💡 **İpucu:** Proxy portunu (3128) herkese açmak yerine, sadece izin vermek istediğiniz kaynak IP adreslerine kısıtlamanız önerilir.
 
 ---
 
-### Adım 8: İstemci Tarafında Proxy Test Etme
+### Adım 10: İstemci Tarafında Proxy Test Etme
 
-#### 8.1 Terminal / cURL ile Test
+#### 10.1 Terminal / cURL ile Test
 
 ```bash
 # Kullanıcı adı ve parolasız (IP izinli ise)
@@ -207,20 +318,37 @@ curl -x http://ahmet_kullanicisi:SIFRENIZ@SUNUCU_IP_ADRESI:3128 https://ifconfig
 
 *(Dönen sonuçta sunucunuzun IP adresi görünüyorsa proxy başarıyla çalışıyor demektir.)*
 
-#### 8.2 Tarayıcıda Kullanma
+#### 10.2 Tarayıcıda Kullanma
 
 - **Firefox:** `Ayarlar` > `Ağ Ayarları (Network Settings)` > `Manuel Proxy Yapılandırması`.
   - **HTTP Proxy:** `SUNUCU_IP_ADRESİ` | **Port:** `3128`
   - "Tüm protokoller için bu proxy sunucusunu kullan" seçeneğini işaretleyin.
 - **FoxyProxy / SwitchyOmega:** Chrome veya Firefox eklentileri ile tek tıkla proxy geçişi yapabilirsiniz.
 
+#### 10.3 `squidclient` ile Cache ve Performans Testi
+
+`curl` sadece bağlantıyı test eder; Squid'in kendi cache manager arayüzü hit ratio, aktif bağlantı ve depolama durumunu gösterir:
+
+```bash
+# Genel sunucu bilgisi (uptime, sürüm, istek sayısı)
+squidclient -p 3128 mgr:info
+
+# Disk cache durumu / hit ratio
+squidclient -p 3128 mgr:storedir
+
+# O anki aktif istekler
+squidclient -p 3128 mgr:active_requests
+```
+
+> 💡 **Not:** Cache manager sayfaları (`mgr:*`) Debian'ın varsayılan `squid.conf`'unda **sadece localhost'tan** erişime açıktır. Bu komutları proxy sunucusunun kendisi üzerinde çalıştırın. Uzaktan erişim gerekiyorsa `cachemgr_passwd` ile parola tanımlayıp `manager` ACL'ini genişletmeniz gerekir.
+
 ---
 
-### Adım 9: İstemci İşletim Sistemi Bazında Proxy Yapılandırması
+### Adım 11: İstemci İşletim Sistemi Bazında Proxy Yapılandırması
 
 Tarayıcı dışında, işletim sisteminin veya belirli araçların (apt, git, curl vb.) trafiğini de proxy üzerinden geçirmek isteyebilirsiniz. Aşağıda **Windows** ve **Debian 13 (Trixie)** istemciler için sistem geneli ve araç bazlı yapılandırmalar yer almaktadır.
 
-#### 10.1 Windows İstemci Yapılandırması
+#### 11.1 Windows İstemci Yapılandırması
 
 **A) Sistem Geneli Proxy (GUI)**
 
@@ -272,7 +400,7 @@ Invoke-WebRequest -Uri "https://ifconfig.me" -Proxy "http://SUNUCU_IP_ADRESI:312
 
 ---
 
-#### 10.2 Debian 13 (Trixie) İstemci Yapılandırması
+#### 11.2 Debian 13 (Trixie) İstemci Yapılandırması
 
 **A) Ortam Değişkenleri (Sistem/Kullanıcı Geneli)**
 
@@ -367,7 +495,43 @@ curl -x $http_proxy https://ifconfig.me
 
 ---
 
-### Adım 10: Log Takibi ve Bakım
+### Adım 12: Squid Servisini Systemd ile Sertleştirme (Hardening)
+
+Squid varsayılan olarak `proxy` sistem kullanıcısıyla çalışır, ancak systemd override ile ek izolasyon katmanları eklemek olası bir güvenlik açığında (ör. uzaktan kod çalıştırma) saldırganın sistemde hareket alanını daraltır. Ana unit dosyasını **doğrudan düzenlemeyin**, override kullanın:
+
+```bash
+sudo systemctl edit squid
+```
+
+Açılan editöre şunu ekleyin:
+
+```ini
+[Service]
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/spool/squid /var/log/squid /var/run
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart squid
+sudo systemctl status squid
+```
+
+Uyguladıktan sonra sertleştirme seviyesini analiz edin ve servisin hâlâ normal çalıştığını (log yazabildiğini, cache'e erişebildiğini) doğrulayın:
+
+```bash
+systemd-analyze security squid
+sudo tail -20 /var/log/squid/cache.log
+```
+
+> ⚠️ **Dikkat:** `ProtectSystem=strict` dosya sistemini salt-okunur yapar; `ReadWritePaths` içine Squid'in yazması gereken **tüm** dizinleri (cache, log, pid) eklemezseniz servis başlamaz veya sessizce hata verir. Değişiklikten sonra mutlaka `systemctl status squid` ve log kontrolü yapın.
+
+---
+
+### Adım 13: Log Takibi ve Bakım
 
 ```bash
 # Canlı erişim loglarını izleme
@@ -383,6 +547,20 @@ Log çıktısı örneği:
 1722950400.123   150 185.190.10.45 TCP_TUNNEL/200 5412 CONNECT google.com:443 ahmet_kullanicisi HIER_DIRECT/142.250.185.206 -
 ```
 
+#### 13.1 Log Rotasyonu Doğrulama
+
+Debian'ın `squid` paketi kurulumla birlikte `/etc/logrotate.d/squid` dosyasını **zaten getirir**, ayrıca oluşturmanıza gerek yok — sadece varlığını doğrulayıp ihtiyacınıza göre ayarlayın:
+
+```bash
+# Mevcut yapılandırmayı görüntüle
+cat /etc/logrotate.d/squid
+
+# Gerçek rotasyon yapmadan test edin (dry-run)
+sudo logrotate -d /etc/logrotate.d/squid
+```
+
+Trafiğiniz yoğunsa `rotate` sayısını artırıp `daily` yapabilirsiniz; diski hızla dolduran bir ortamsa `compress` satırının aktif olduğundan emin olun.
+
 ---
 
 ## 💡 Dikkat Edilmesi Gereken İpuçları & Düzeltmeler
@@ -390,7 +568,8 @@ Log çıktısı örneği:
 1. **`http_access` Kural Sıralaması:** `allow` kuralları mutlaka `deny all` satırından **ÖNCE** yazılmalıdır, aksi halde 403 Forbidden hatası alırsınız.
 2. **`basic_ncsa_auth` Yolu:** Dağıtımınıza göre farklılık gösterebilir. `sudo find / -name basic_ncsa_auth 2>/dev/null` ile doğru yolu bulun.
 3. **`Connection Refused` Hatası:** `sudo systemctl status squid` ile servisin çalıştığını ve sunucunuzun güvenlik duvarında (örn. UFW, iptables) 3128 portunun açık olduğunu doğrulayın.
-4. **Yapılandırma Doğrulama:** Değişiklik yaptıktan sonra `sudo squid -k parse` komutu ile sözdizimi kontrolü yapabilirsiniz.
+4. **Yapılandırma Doğrulama:** `squid.conf` üzerinde **her** değişiklikten sonra, `reload`/`restart` atmadan önce mutlaka `sudo squid -k parse` ile sözdizimi kontrolü yapın. Bu, `deny all` kuralının yanlışlıkla silinmesi gibi kritik hataları servis yeniden başlamadan önce yakalamanızı sağlar.
+5. **Cache dizini ilk kurulum hatası:** `cache_dir` tanımlayıp `squid -z` çalıştırmadan servisi başlatırsanız Squid hata verir veya cache'i kullanmaz — Adım 8'i atlamayın.
 
 *Tebrikler! Debian 13 üzerinde Squid Proxy kurulumunuz başarıyla tamamlanmıştır.*
 
