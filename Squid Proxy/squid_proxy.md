@@ -1,6 +1,6 @@
 # Squid Proxy Server on Debian 13 (Trixie) Forward Proxy
 
-**Squid**, istemcilerin internete çıkışını düzenleyen yüksek performanslı, açık kaynaklı bir **ileri proxy (forward proxy)**, önbellekleme (caching) ve içerik filtreleme sunucusudur. İçerideki cihazların dışarıya (internete) nasıl çıkacağını kontrol eder, IP adresinizi gizler (anonim proxy) ve yerel ağdaki bant genişliğini optimize eder.
+**Squid**, istemcilerin internete çıkışını düzenleyen yüksek performanslı, açık kaynaklı bir **ileri proxy (Forward Proxy)**, önbellekleme (caching) ve içerik filtreleme sunucusudur. İçerideki cihazların dışarıya (internete) nasıl çıkacağını kontrol eder, IP adresinizi gizler (anonim proxy) ve yerel ağdaki bant genişliğini optimize eder.
 
 Bu rehber, **Debian 13 (Trixie)** üzerinde Squid Proxy'nin doğrudan paket yöneticisi ile kurulumunu, Basic Auth kimlik doğrulamasını, Elite Proxy (yüksek anonimlik), HTTPS filtreleme, cache ve güvenlik sertleştirme yapılandırmasını kapsamaktadır.
 
