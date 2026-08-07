@@ -1,1 +1,1 @@
-# 🛠️ IT Orchestral Infrastructure & DevOps Base
+# 🛠️ IT Infrastructure & DevOps Base
