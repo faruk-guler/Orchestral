@@ -1,6 +1,6 @@
 # Squid Proxy Server on Debian 13 (Trixie) Forward Proxy
 
-**Squid**, istemcilerin internete çıkışını düzenleyen yüksek performanslı, açık kaynaklı bir **ileri proxy (Forward Proxy)**, önbellekleme (caching) ve içerik filtreleme sunucusudur. İçerideki cihazların dışarıya (internete) nasıl çıkacağını kontrol eder, IP adresinizi gizler (anonim proxy) ve yerel ağdaki bant genişliğini optimize eder.
+**Squid**, istemcilerin internete çıkışını düzenleyen yüksek performanslı, açık kaynaklı bir **ileri proxy (forward proxy)**, önbellekleme (caching) ve içerik filtreleme sunucusudur. İçerideki cihazların dışarıya (internete) nasıl çıkacağını kontrol eder, IP adresinizi gizler (anonim proxy) ve yerel ağdaki bant genişliğini optimize eder.
 
 Bu rehber, **Debian 13 (Trixie)** üzerinde Squid Proxy'nin doğrudan paket yöneticisi ile kurulumunu, Basic Auth kimlik doğrulamasını, Elite Proxy (yüksek anonimlik), HTTPS filtreleme, cache ve güvenlik sertleştirme yapılandırmasını kapsamaktadır.
 
@@ -244,11 +244,13 @@ sudo squid -k parse && sudo systemctl restart squid
 ```
 
 `squidCA.der` dosyasını istemcilere kök sertifika olarak yükleyin:
+
 - **Windows:** `certutil -addstore -f "ROOT" squidCA.der`
 - **Debian/Linux:** `.crt` uzantısıyla `/usr/local/share/ca-certificates/` içine kopyalayıp `sudo update-ca-certificates`
 - **Mobil (iOS/Android):** Profil olarak yükleyip "güvenilir kök sertifika" olarak onaylatmak gerekir.
 
 > 🔴 **Kritik Uyarı — Hukuki/Politika Boyutu:** Tam SSL Bump, kullanıcıların şifreli trafiğini gerçek zamanlı olarak deşifre eder (MITM). Bu:
+>
 > - Sertifika pinning kullanan uygulamaları (bankacılık, bazı mobil uygulamalar) kırar.
 > - KVKK/GDPR kapsamında çalışan/kullanıcı bilgilendirmesi ve genelde yazılı onay gerektirir — sadece teknik bir adım değil, bir politika kararıdır.
 > - Kurumsal olmayan (ev/kişisel) kullanımda genelde gereksizdir; çoğu senaryoda 7.1'deki SNI yöntemi yeterlidir.
